@@ -1,0 +1,2 @@
+include ':app_x', ':common', ':player_cc', ':player_bjy', ':player_original'
+rootProject.name='ZAYMediaPlayer'
