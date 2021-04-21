@@ -38,9 +38,9 @@ public interface MPlayer {
 
     void release();
 
-    void seek(int seekTime);
+    void seekTo(int seekTime);
 
-    int getCurrentTime();
+    int getCurrentPosition();
 
     int getDuration();
 
