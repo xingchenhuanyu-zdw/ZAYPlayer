@@ -46,7 +46,7 @@ public interface MPlayer {
 
     int getDuration();
 
-    int getDefinition();
+    int getDefinitionCode();
 
     @Nullable
     String getDefinitionName();

@@ -86,7 +86,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     }
 
     @Override
-    public void setupOnlineVideoWithId(String videoId, String token) {
+    public void setupOnlineVideoWithId(@NonNull String videoId, @Nullable String token) {
         if (mMediaPlayer == null) return;
         mIsPrepared = false;
         mMediaPlayer.stop();
@@ -165,19 +165,19 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
 
     // 获取视频清晰度
     @Override
-    public int getDefinition() {
+    public int getDefinitionCode() {
         if (mMediaPlayer == null) return -1;
         return mMediaPlayer.getDefinitionCode();
     }
 
-    // 获取视频清晰度描述
+    // 获取视频清晰度名称
     @Nullable
     @Override
     public String getDefinitionName() {
-        return getDefinitionName(getDefinition());
+        return getDefinitionName(getDefinitionCode());
     }
 
-    // 获取视频清晰度描述
+    // 获取视频清晰度名称
     @Nullable
     @Override
     public String getDefinitionName(int definition) {
@@ -208,7 +208,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     @Override
     public boolean changeDefinition(int definition) {
         if (mMediaPlayer == null) return false;
-        if (getDefinition() == definition) return true;
+        if (getDefinitionCode() == definition) return true;
+        if (definition != DWMediaPlayer.HIGH_DEFINITION &&
+                definition != DWMediaPlayer.NORMAL_DEFINITION)
+            return false;
         try {
             mMediaPlayer.reset();
             mMediaPlayer.setSurface(mSurface);
@@ -226,8 +229,8 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
 
     @Override
     public void setPreferredDefinition(int definition) {
-        if (definition == DWMediaPlayer.HIGH_DEFINITION) {
-            mPreferredDefinition = definition;
+        if (definition >= DWMediaPlayer.HIGH_DEFINITION) {
+            mPreferredDefinition = DWMediaPlayer.HIGH_DEFINITION;
         } else {
             mPreferredDefinition = DWMediaPlayer.NORMAL_DEFINITION;
         }

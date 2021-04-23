@@ -55,9 +55,15 @@ public class Main2Activity extends AppCompatActivity {
         setContentView(R.layout.activity_main2);
         initViews();
         initPlayerWrapper();
-        mMPlayer.setAutoPlay(true);
-        mMPlayer.setPreferredDefinition(DWMediaPlayer.HIGH_DEFINITION);
-        mMPlayer.setupOnlineVideoWithId("4BCED300260AB2BD9C33DC5901307461", null);
+        if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_CC) {
+            mMPlayer.setAutoPlay(true);
+            mMPlayer.setPreferredDefinition(DWMediaPlayer.HIGH_DEFINITION);
+            mMPlayer.setupOnlineVideoWithId("4BCED300260AB2BD9C33DC5901307461", null);
+        } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_BJY) {
+            mMPlayer.setAutoPlay(true);
+            mMPlayer.setPreferredDefinition(VideoDefinition._1080P.getType());
+            mMPlayer.setupOnlineVideoWithId("69115957", "zUOmwxiqv_U3Gu_x5aiohdaJqbP-km6stv7k6_ZZMWiKVcCqpqYKMSou22apgAA0");
+        }
     }
 
     @Override
@@ -109,11 +115,8 @@ public class Main2Activity extends AppCompatActivity {
             mMPlayer = new MPlayerBJYImpl.Builder()
                     .setSupportBackgroundAudio(false)
                     .setSupportBreakPointPlay(false)
-                    .setSupportLooping(false)
+                    .setSupportLooping(true)
                     .setLifecycle(getLifecycle())
-                    .setPreferredDefinitions(new ArrayList<VideoDefinition>() {{
-                        add(VideoDefinition.UNKNOWN);
-                    }})
                     .setContext(this)
                     .setUserInfo(null, null)
                     .build();
