@@ -3,6 +3,7 @@ package com.zay.player_bjy;
 import android.content.Context;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 
 import com.baijiayun.constant.VideoDefinition;
@@ -15,6 +16,7 @@ import com.zay.common.listeners.OnMPlayerStatusChangeListener;
 import com.zay.common.listeners.OnMPlayingTimeChangeListener;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Zdw on 2021/04/21 14:31
@@ -66,7 +68,7 @@ public class MPlayerBJYImpl implements MPlayer {
     }
 
     @Override
-    public void play() {
+    public void start() {
 
     }
 
@@ -105,8 +107,21 @@ public class MPlayerBJYImpl implements MPlayer {
         return 0;
     }
 
+    @Nullable
     @Override
-    public List<Integer> getSupportedDefinitionList() {
+    public String getDefinitionName() {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public String getDefinitionName(int definition) {
+        return null;
+    }
+
+    @Nullable
+    @Override
+    public Map<String, Integer> getSupportedDefinitions() {
         return null;
     }
 

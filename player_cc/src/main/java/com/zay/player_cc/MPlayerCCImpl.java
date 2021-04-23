@@ -11,6 +11,7 @@ import android.view.TextureView;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
 import androidx.lifecycle.OnLifecycleEvent;
@@ -25,8 +26,7 @@ import com.zay.common.listeners.OnMPlayingTimeChangeListener;
 import com.zay.player_cc.widget.CCPlayerView;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Zdw on 2021/04/21 14:20
@@ -108,7 +108,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
 
     // 开始播放
     @Override
-    public void play() {
+    public void start() {
         if (mMediaPlayer == null) return;
         mMediaPlayer.start();
         mHandler.post(mTimeInfoRunnable);
@@ -170,12 +170,34 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         return mMediaPlayer.getDefinitionCode();
     }
 
-    // 获取视频清晰度列表
+    // 获取视频清晰度描述
+    @Nullable
     @Override
-    public List<Integer> getSupportedDefinitionList() {
+    public String getDefinitionName() {
+        return getDefinitionName(getDefinition());
+    }
+
+    // 获取视频清晰度描述
+    @Nullable
+    @Override
+    public String getDefinitionName(int definition) {
+        if (mMediaPlayer == null) return null;
+        Map<String, Integer> definitions = mMediaPlayer.getDefinitions();
+        for (Map.Entry<String, Integer> entry : definitions.entrySet()) {
+            if (definition == entry.getValue()) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    // 获取视频清晰度集合
+    @Nullable
+    @Override
+    public Map<String, Integer> getSupportedDefinitions() {
         if (mMediaPlayer == null) return null;
         try {
-            return new ArrayList<>(mMediaPlayer.getDefinitions().values());
+            return mMediaPlayer.getDefinitions();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -236,7 +258,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     private void onResume() {
         if (!mSupportBackgroundAudio) {
             if (!isPlaying() && mIsPrepared && mIsAutoPaused) {
-                play();
+                start();
                 mIsAutoPaused = false;
             }
         }
@@ -313,7 +335,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
                 if (mCCPlayerView != null)
                     mCCPlayerView.onVideoSizeChanged(mp.getVideoWidth(), mp.getVideoHeight());
                 if (mAutoPlay) {
-                    play();
+                    start();
                 }
                 if (mOnMPlayerStatusChangeListener != null) {
                     mOnMPlayerStatusChangeListener.onPrepared();

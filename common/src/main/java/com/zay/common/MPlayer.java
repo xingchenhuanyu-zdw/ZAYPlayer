@@ -2,12 +2,14 @@ package com.zay.common;
 
 import android.widget.FrameLayout;
 
+import androidx.annotation.Nullable;
+
 import com.zay.common.listeners.OnMBufferedUpdateListener;
 import com.zay.common.listeners.OnMBufferingListener;
 import com.zay.common.listeners.OnMPlayerStatusChangeListener;
 import com.zay.common.listeners.OnMPlayingTimeChangeListener;
 
-import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Zdw on 2021/01/19 16:02
@@ -30,7 +32,7 @@ public interface MPlayer {
 
     boolean isPlaying();
 
-    void play();
+    void start();
 
     void pause();
 
@@ -46,7 +48,14 @@ public interface MPlayer {
 
     int getDefinition();
 
-    List<Integer> getSupportedDefinitionList();
+    @Nullable
+    String getDefinitionName();
+
+    @Nullable
+    String getDefinitionName(int definition);
+
+    @Nullable
+    Map<String, Integer> getSupportedDefinitions();
 
     boolean changeDefinition(int definition);
 
