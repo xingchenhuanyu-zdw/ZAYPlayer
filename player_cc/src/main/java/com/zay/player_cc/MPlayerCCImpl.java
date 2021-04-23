@@ -46,6 +46,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     private DWMediaPlayer mMediaPlayer;
     private DRMServer mDRMServer;
     private int mDrmServerPort;
+    private int mCurrentPosition = -1;
     private int mPreferredDefinition = DWMediaPlayer.NORMAL_DEFINITION;
     private OnMPlayingTimeChangeListener mOnMPlayingTimeChangeListener;
     private OnMBufferedUpdateListener mOnMBufferedUpdateListener;
@@ -213,11 +214,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
                 definition != DWMediaPlayer.NORMAL_DEFINITION)
             return false;
         try {
+            mCurrentPosition = getCurrentPosition();
             mMediaPlayer.reset();
             mMediaPlayer.setSurface(mSurface);
             mDRMServer.reset();
-            mPreferredDefinition = definition;
-            mMediaPlayer.setDefaultDefinition(definition);
             mMediaPlayer.setDefinition(mContext, definition);
             mIsPrepared = false;
             return true;
@@ -339,6 +339,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
                     mCCPlayerView.onVideoSizeChanged(mp.getVideoWidth(), mp.getVideoHeight());
                 if (mAutoPlay) {
                     start();
+                }
+                if (mCurrentPosition > 0) {// 切换清晰度时保持播放进度
+                    seekTo(mCurrentPosition);
+                    mCurrentPosition = -1;
                 }
                 if (mOnMPlayerStatusChangeListener != null) {
                     mOnMPlayerStatusChangeListener.onPrepared();
