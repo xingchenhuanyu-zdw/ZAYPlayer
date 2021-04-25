@@ -19,6 +19,7 @@ import com.zay.common.listeners.OnMPlayerStatusChangeListener;
 import com.zay.player_bjy.MPlayerBJYImpl;
 import com.zay.player_cc.MPlayerCCImpl;
 import com.zay.player_cc.widget.CCPlayerView;
+import com.zay.player_exo.MPlayerExoImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,8 @@ public class Main2Activity extends AppCompatActivity {
             mMPlayer.setAutoPlay(true);
             mMPlayer.setPreferredDefinition(VideoDefinition._1080P.getType());
             mMPlayer.setupOnlineVideoWithId("69115957", "zUOmwxiqv_U3Gu_x5aiohdaJqbP-km6stv7k6_ZZMWiKVcCqpqYKMSou22apgAA0");
+        } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_EXO) {
+            mMPlayer.setAutoPlay(true);
         }
     }
 
@@ -100,10 +103,9 @@ public class Main2Activity extends AppCompatActivity {
 
     private void initPlayerWrapper() {
         if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_CC) {
-            mMPlayer = new MPlayerCCImpl.Builder()
+            mMPlayer = new MPlayerCCImpl.Builder(this)
                     .setSupportBackgroundAudio(false)
                     .setLifecycle(getLifecycle())
-                    .setContext(this)
                     .setUserId("055AE5CC4411D5CB")
                     .setApiKey("BnPoazIUwhRa1Sk5AVBP7hk8dDk7a3Aw")
                     .setVerificationCode(null)
@@ -112,17 +114,21 @@ public class Main2Activity extends AppCompatActivity {
             mCcPlayerView.setVisibility(View.VISIBLE);
             mBjyPlayerView.setVisibility(View.GONE);
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_BJY) {
-            mMPlayer = new MPlayerBJYImpl.Builder()
+            mMPlayer = new MPlayerBJYImpl.Builder(this)
                     .setSupportBackgroundAudio(false)
                     .setSupportBreakPointPlay(false)
                     .setSupportLooping(true)
                     .setLifecycle(getLifecycle())
-                    .setContext(this)
                     .setUserInfo(null, null)
                     .build();
             mMPlayer.bindPlayerView(mBjyPlayerView);
             mBjyPlayerView.setVisibility(View.VISIBLE);
             mCcPlayerView.setVisibility(View.GONE);
+        } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_EXO) {
+            mMPlayer = new MPlayerExoImpl.Builder(this)
+                    .setSupportBackgroundAudio(false)
+                    .setLifecycle(getLifecycle())
+                    .build();
         }
         mMPlayer.setOnMPlayingTimeChangeListener((currentTime, duration) -> {
             mTvCurrentTime.setText(millSecondsToStr(currentTime * 1000));

@@ -22,7 +22,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api project(path: ':common')
+    implementation project(path: ':common')
     api('com.baijia.player:VideoplayerCore:2.4.1') {
         exclude group: 'com.android.support'
     }

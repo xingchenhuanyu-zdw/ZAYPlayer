@@ -10,7 +10,7 @@ import java.lang.annotation.RetentionPolicy;
  */
 public class Constant {
 
-    @IntDef({com.zay.common.PlayerMode.MODE_CC, com.zay.common.PlayerMode.MODE_BJY, com.zay.common.PlayerMode.MODE_ORIGINAL})
+    @IntDef({com.zay.common.PlayerMode.MODE_CC, com.zay.common.PlayerMode.MODE_BJY, com.zay.common.PlayerMode.MODE_EXO})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PlayerMode {
     }

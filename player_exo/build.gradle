@@ -11,6 +11,11 @@ android {
         versionName "1.0"
     }
 
+    // For Java compilers:
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
     buildTypes {
         release {
             minifyEnabled false
@@ -22,4 +27,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation project(path: ':common')
+    api 'com.google.android.exoplayer:exoplayer:2.13.3'
+
 }

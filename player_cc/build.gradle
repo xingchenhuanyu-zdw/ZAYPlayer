@@ -23,7 +23,7 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    api project(path: ':common')
+    implementation project(path: ':common')
     api 'com.bokecc:commonLib:0.1.12'
     api 'com.bokecc:CCVOD:3.15.1'
     api 'com.bokecc:drm:1.2.1'

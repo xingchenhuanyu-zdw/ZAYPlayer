@@ -396,7 +396,8 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         private Context mContext;
         private String mUserId, mApiKey, mVerificationCode;
 
-        public Builder() {
+        public Builder(@NonNull Context context) {
+            this.mContext = context.getApplicationContext();
         }
 
         public Builder setSupportBackgroundAudio(boolean supportBackgroundAudio) {
@@ -404,13 +405,8 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
             return this;
         }
 
-        public Builder setLifecycle(@NonNull Lifecycle lifecycle) {
+        public Builder setLifecycle(@Nullable Lifecycle lifecycle) {
             this.mLifecycle = lifecycle;
-            return this;
-        }
-
-        public Builder setContext(@NonNull Context context) {
-            this.mContext = context.getApplicationContext();
             return this;
         }
 
@@ -424,7 +420,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
             return this;
         }
 
-        public Builder setVerificationCode(String verificationCode) {
+        public Builder setVerificationCode(@Nullable String verificationCode) {
             mVerificationCode = verificationCode;
             return this;
         }
@@ -432,7 +428,8 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         public MPlayerCCImpl build() {
             MPlayerCCImpl playerFactory = new MPlayerCCImpl();
             playerFactory.setSupportBackgroundAudio(mSupportBackgroundAudio);
-            playerFactory.setLifecycle(mLifecycle);
+            if (mLifecycle != null)
+                playerFactory.setLifecycle(mLifecycle);
             playerFactory.setContext(mContext);
             playerFactory.setUserId(mUserId);
             playerFactory.setApiKey(mApiKey);

@@ -289,7 +289,8 @@ public class MPlayerBJYImpl implements MPlayer {
         private String mUserName;
         private String mUserIdentity;
 
-        public Builder() {
+        public Builder(@NonNull Context context) {
+            this.mContext = context.getApplicationContext();
         }
 
         public Builder setSupportBackgroundAudio(boolean supportBackgroundAudio) {
@@ -307,17 +308,12 @@ public class MPlayerBJYImpl implements MPlayer {
             return this;
         }
 
-        public Builder setLifecycle(Lifecycle lifecycle) {
+        public Builder setLifecycle(@Nullable Lifecycle lifecycle) {
             this.mLifecycle = lifecycle;
             return this;
         }
 
-        public Builder setContext(Context context) {
-            this.mContext = context.getApplicationContext();
-            return this;
-        }
-
-        public Builder setUserInfo(String userName, String userIdentity) {
+        public Builder setUserInfo(@Nullable String userName, @Nullable String userIdentity) {
             this.mUserName = userName;
             this.mUserIdentity = userIdentity;
             return this;
