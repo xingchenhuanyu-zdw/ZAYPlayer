@@ -30,6 +30,13 @@
             app:render_type="texture_view"
             tools:visibility="visible" />
 
+        <com.google.android.exoplayer2.ui.PlayerView
+            android:id="@+id/exo_player_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
+            tools:visibility="visible" />
+
         <LinearLayout
             android:id="@+id/player_bottom_layout"
             android:layout_width="fill_parent"
@@ -65,9 +72,12 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="5dp"
                 android:layout_weight="1"
+                android:max="100"
                 android:maxHeight="3dp"
                 android:minHeight="3dp"
-                android:progressDrawable="@drawable/seekbar_style" />
+                android:progressDrawable="@drawable/seekbar_style"
+                tools:progress="25"
+                tools:secondaryProgress="50" />
 
             <TextView
                 android:id="@+id/tv_duration"

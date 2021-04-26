@@ -13,6 +13,7 @@
             <option value="$PROJECT_DIR$/player_bjy" />
             <option value="$PROJECT_DIR$/player_cc" />
             <option value="$PROJECT_DIR$/player_exo" />
+            <option value="$PROJECT_DIR$/test_exo" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

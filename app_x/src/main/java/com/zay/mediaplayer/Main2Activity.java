@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.baijiayun.constant.VideoDefinition;
 import com.baijiayun.videoplayer.widget.BJYPlayerView;
 import com.bokecc.sdk.mobile.play.DWMediaPlayer;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.zay.common.MPlayer;
 import com.zay.common.PlayerMode;
 import com.zay.common.listeners.OnMPlayerStatusChangeListener;
@@ -39,6 +40,8 @@ public class Main2Activity extends AppCompatActivity {
     CCPlayerView mCcPlayerView;
     @BindView(R.id.bjy_player_view)
     BJYPlayerView mBjyPlayerView;
+    @BindView(R.id.exo_player_view)
+    PlayerView mExoPlayerView;
     @BindView(R.id.iv_start_pause)
     ImageView mIvStartPause;
     @BindView(R.id.tv_current_time)
@@ -66,6 +69,7 @@ public class Main2Activity extends AppCompatActivity {
             mMPlayer.setupOnlineVideoWithId("69115957", "zUOmwxiqv_U3Gu_x5aiohdaJqbP-km6stv7k6_ZZMWiKVcCqpqYKMSou22apgAA0");
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_EXO) {
             mMPlayer.setAutoPlay(true);
+            mMPlayer.setupOnlineVideoWithId("https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4", null);
         }
     }
 
@@ -113,6 +117,7 @@ public class Main2Activity extends AppCompatActivity {
             mMPlayer.bindPlayerView(mCcPlayerView);
             mCcPlayerView.setVisibility(View.VISIBLE);
             mBjyPlayerView.setVisibility(View.GONE);
+            mExoPlayerView.setVisibility(View.GONE);
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_BJY) {
             mMPlayer = new MPlayerBJYImpl.Builder(this)
                     .setSupportBackgroundAudio(false)
@@ -124,11 +129,16 @@ public class Main2Activity extends AppCompatActivity {
             mMPlayer.bindPlayerView(mBjyPlayerView);
             mBjyPlayerView.setVisibility(View.VISIBLE);
             mCcPlayerView.setVisibility(View.GONE);
+            mExoPlayerView.setVisibility(View.GONE);
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_EXO) {
             mMPlayer = new MPlayerExoImpl.Builder(this)
                     .setSupportBackgroundAudio(false)
                     .setLifecycle(getLifecycle())
                     .build();
+            mMPlayer.bindPlayerView(mExoPlayerView);
+            mExoPlayerView.setVisibility(View.VISIBLE);
+            mCcPlayerView.setVisibility(View.GONE);
+            mBjyPlayerView.setVisibility(View.GONE);
         }
         mMPlayer.setOnMPlayingTimeChangeListener((currentTime, duration) -> {
             mTvCurrentTime.setText(millSecondsToStr(currentTime * 1000));
