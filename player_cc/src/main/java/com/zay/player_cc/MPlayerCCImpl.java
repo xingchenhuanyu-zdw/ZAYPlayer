@@ -365,6 +365,27 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     private void setMediaPlayer(DWMediaPlayer mediaPlayer) {
         mMediaPlayer = mediaPlayer;
         mMediaPlayer.setDRMServerPort(mDrmServerPort);
+        // 视频缓冲状态
+        mMediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
+            @Override
+            public boolean onInfo(MediaPlayer mp, int what, int extra) {
+                Log.i(TAG, "onInfo what: " + what);
+                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                    for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                        if (listener != null) {
+                            listener.onBufferingStart();
+                        }
+                    }
+                } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                    for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                        if (listener != null) {
+                            listener.onBufferingEnd();
+                        }
+                    }
+                }
+                return false;
+            }
+        });
         // 视频缓冲进度
         mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
@@ -380,7 +401,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                Log.e(TAG, "setOnPreparedListener");
+                Log.i(TAG, "setOnPreparedListener");
                 mIsPrepared = true;
                 if (mCCPlayerView != null)
                     mCCPlayerView.onVideoSizeChanged(mp.getVideoWidth(), mp.getVideoHeight());
