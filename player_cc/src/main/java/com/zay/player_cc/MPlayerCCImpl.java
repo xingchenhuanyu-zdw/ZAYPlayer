@@ -26,7 +26,9 @@ import com.zay.common.listeners.OnMPlayingTimeChangeListener;
 import com.zay.player_cc.widget.CCPlayerView;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Zdw on 2021/04/21 14:20
@@ -48,28 +50,69 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     private int mDrmServerPort;
     private int mCurrentPosition = -1;
     private int mPreferredDefinition = DWMediaPlayer.NORMAL_DEFINITION;
-    private OnMPlayingTimeChangeListener mOnMPlayingTimeChangeListener;
-    private OnMBufferedUpdateListener mOnMBufferedUpdateListener;
-    private OnMPlayerStatusChangeListener mOnMPlayerStatusChangeListener;
+    private Set<OnMPlayingTimeChangeListener> mOnMPlayingTimeChangeListenerSet = new HashSet<>();
+    private Set<OnMBufferedUpdateListener> mOnMBufferedUpdateListenerSet = new HashSet<>();
+    private Set<OnMBufferingListener> mOnMBufferingListenerSet = new HashSet<>();
+    private Set<OnMPlayerStatusChangeListener> mOnMPlayerStatusChangeListenerSet = new HashSet<>();
 
     @Override
-    public void setOnMPlayingTimeChangeListener(OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListener = listener;
+    public void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
+        mOnMPlayingTimeChangeListenerSet.add(listener);
     }
 
     @Override
-    public void setOnMBufferedUpdateListener(OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListener = listener;
+    public void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
+        mOnMPlayingTimeChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void setOnMBufferingListener(OnMBufferingListener listener) {
-
+    public void removeAllOnMPlayingTimeChangeListener() {
+        mOnMPlayingTimeChangeListenerSet.clear();
     }
 
     @Override
-    public void setOnMPlayerStatusChangeListener(OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListener = listener;
+    public void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
+        mOnMBufferedUpdateListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
+        mOnMBufferedUpdateListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMBufferedUpdateListener() {
+        mOnMBufferedUpdateListenerSet.clear();
+    }
+
+    @Override
+    public void addOnMBufferingListener(@NonNull OnMBufferingListener listener) {
+        mOnMBufferingListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMBufferingListener(@NonNull OnMBufferingListener listener) {
+        mOnMBufferingListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMBufferingListener() {
+        mOnMBufferingListenerSet.clear();
+    }
+
+    @Override
+    public void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
+        mOnMPlayerStatusChangeListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
+        mOnMPlayerStatusChangeListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMPlayerStatusChangeListener() {
+        mOnMPlayerStatusChangeListenerSet.clear();
     }
 
     @Override
@@ -120,8 +163,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     public void pause() {
         if (mMediaPlayer == null) return;
         if (isPlaying()) {// 之前正在播放时
-            if (mOnMPlayerStatusChangeListener != null) {
-                mOnMPlayerStatusChangeListener.onPaused();
+            for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                if (listener != null) {
+                    listener.onPaused();
+                }
             }
         }
         mMediaPlayer.pause();
@@ -324,8 +369,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                if (mOnMBufferedUpdateListener != null) {
-                    mOnMBufferedUpdateListener.onBufferedPercentageChange(percent);
+                for (OnMBufferedUpdateListener listener : mOnMBufferedUpdateListenerSet) {
+                    if (listener != null) {
+                        listener.onBufferedPercentageChange(percent);
+                    }
                 }
             }
         });
@@ -344,8 +391,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
                     seekTo(mCurrentPosition);
                     mCurrentPosition = -1;
                 }
-                if (mOnMPlayerStatusChangeListener != null) {
-                    mOnMPlayerStatusChangeListener.onPrepared();
+                for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                    if (listener != null) {
+                        listener.onPrepared();
+                    }
                 }
             }
         });
@@ -355,8 +404,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
             public void onCompletion(MediaPlayer mp) {
                 // 未设置视频资源时，点击 CCPlayerView 会触发，排除掉
                 if (mMediaPlayer.getPlayInfo() == null) return;
-                if (mOnMPlayerStatusChangeListener != null) {
-                    mOnMPlayerStatusChangeListener.onCompleted();
+                for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                    if (listener != null) {
+                        listener.onCompleted();
+                    }
                 }
             }
         });
@@ -381,8 +432,10 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         @Override
         public void run() {
             if (isPlaying()) {
-                if (mOnMPlayingTimeChangeListener != null) {
-                    mOnMPlayingTimeChangeListener.onPlayingTimeChange(getCurrentPosition(), getDuration());
+                for (OnMPlayingTimeChangeListener listener : mOnMPlayingTimeChangeListenerSet) {
+                    if (listener != null) {
+                        listener.onPlayingTimeChange(getCurrentPosition(), getDuration());
+                    }
                 }
                 mHandler.postDelayed(mTimeInfoRunnable, 1000L);
             }

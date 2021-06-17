@@ -27,7 +27,9 @@ import com.zay.common.listeners.OnMBufferingListener;
 import com.zay.common.listeners.OnMPlayerStatusChangeListener;
 import com.zay.common.listeners.OnMPlayingTimeChangeListener;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Zdw on 2021/04/25 9:54
@@ -41,29 +43,69 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
     private boolean mIsPrepared = false;
     private boolean mIsAutoPaused = false;
     private SimpleExoPlayer mExoPlayer;
-    private OnMPlayingTimeChangeListener mOnMPlayingTimeChangeListener;
-    private OnMBufferedUpdateListener mOnMBufferedUpdateListener;
-    private OnMBufferingListener mOnMBufferingListener;
-    private OnMPlayerStatusChangeListener mOnMPlayerStatusChangeListener;
+    private Set<OnMPlayingTimeChangeListener> mOnMPlayingTimeChangeListenerSet = new HashSet<>();
+    private Set<OnMBufferedUpdateListener> mOnMBufferedUpdateListenerSet = new HashSet<>();
+    private Set<OnMBufferingListener> mOnMBufferingListenerSet = new HashSet<>();
+    private Set<OnMPlayerStatusChangeListener> mOnMPlayerStatusChangeListenerSet = new HashSet<>();
 
     @Override
-    public void setOnMPlayingTimeChangeListener(OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListener = listener;
+    public void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
+        mOnMPlayingTimeChangeListenerSet.add(listener);
     }
 
     @Override
-    public void setOnMBufferedUpdateListener(OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListener = listener;
+    public void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
+        mOnMPlayingTimeChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void setOnMBufferingListener(OnMBufferingListener listener) {
-        mOnMBufferingListener = listener;
+    public void removeAllOnMPlayingTimeChangeListener() {
+        mOnMPlayingTimeChangeListenerSet.clear();
     }
 
     @Override
-    public void setOnMPlayerStatusChangeListener(OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListener = listener;
+    public void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
+        mOnMBufferedUpdateListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
+        mOnMBufferedUpdateListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMBufferedUpdateListener() {
+        mOnMBufferedUpdateListenerSet.clear();
+    }
+
+    @Override
+    public void addOnMBufferingListener(@NonNull OnMBufferingListener listener) {
+        mOnMBufferingListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMBufferingListener(@NonNull OnMBufferingListener listener) {
+        mOnMBufferingListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMBufferingListener() {
+        mOnMBufferingListenerSet.clear();
+    }
+
+    @Override
+    public void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
+        mOnMPlayerStatusChangeListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
+        mOnMPlayerStatusChangeListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMPlayerStatusChangeListener() {
+        mOnMPlayerStatusChangeListenerSet.clear();
     }
 
     @Override
@@ -129,8 +171,10 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
     public void pause() {
         if (mExoPlayer == null) return;
         if (isPlaying()) {// 之前正在播放时
-            if (mOnMPlayerStatusChangeListener != null) {
-                mOnMPlayerStatusChangeListener.onPaused();
+            for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                if (listener != null) {
+                    listener.onPaused();
+                }
             }
         }
         mExoPlayer.pause();
@@ -271,8 +315,10 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
                     } else if (state == Player.STATE_BUFFERING) {// 正在缓冲
                         Log.i(TAG, "onPlaybackStateChanged state: STATE_BUFFERING");
                         mHandler.post(mBufferedPercentageRunnable);
-                        if (mOnMBufferingListener != null) {
-                            mOnMBufferingListener.onBufferingStart();
+                        for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                            if (listener != null) {
+                                listener.onBufferingStart();
+                            }
                         }
                     } else if (state == Player.STATE_READY) {// 缓冲完成，可以播放
                         Log.i(TAG, "onPlaybackStateChanged state: STATE_READY");
@@ -280,16 +326,22 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
                         if (mExoPlayer.getPlayWhenReady()) {
                             mHandler.post(mTimeInfoRunnable);
                         }
-                        if (mOnMBufferingListener != null) {
-                            mOnMBufferingListener.onBufferingEnd();
+                        for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                            if (listener != null) {
+                                listener.onBufferingEnd();
+                            }
                         }
-                        if (mOnMPlayerStatusChangeListener != null) {
-                            mOnMPlayerStatusChangeListener.onPrepared();
+                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                            if (listener != null) {
+                                listener.onPrepared();
+                            }
                         }
                     } else if (state == Player.STATE_ENDED) {// 播放结束，全部视频播放完时才会触发
                         Log.i(TAG, "onPlaybackStateChanged state: STATE_ENDED");
-                        if (mOnMPlayerStatusChangeListener != null) {
-                            mOnMPlayerStatusChangeListener.onCompleted();
+                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                            if (listener != null) {
+                                listener.onCompleted();
+                            }
                         }
                     }
                 }
@@ -301,8 +353,10 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
         @Override
         public void run() {
             if (isPlaying()) {
-                if (mOnMPlayingTimeChangeListener != null) {
-                    mOnMPlayingTimeChangeListener.onPlayingTimeChange(getCurrentPosition(), getDuration());
+                for (OnMPlayingTimeChangeListener listener : mOnMPlayingTimeChangeListenerSet) {
+                    if (listener != null) {
+                        listener.onPlayingTimeChange(getCurrentPosition(), getDuration());
+                    }
                 }
                 mHandler.postDelayed(mTimeInfoRunnable, 1000L);
             }
@@ -314,11 +368,15 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
         @Override
         public void run() {
             if (mExoPlayer != null) {
-                if (mOnMBufferedUpdateListener != null) {
+                if (mOnMBufferedUpdateListenerSet.size() > 0) {
                     int bufferedPercentage = mExoPlayer.getBufferedPercentage();
                     if (mBufferedPercentage != bufferedPercentage) {
                         mBufferedPercentage = bufferedPercentage;
-                        mOnMBufferedUpdateListener.onBufferedPercentageChange(mBufferedPercentage);
+                        for (OnMBufferedUpdateListener listener : mOnMBufferedUpdateListenerSet) {
+                            if (listener != null) {
+                                listener.onBufferedPercentageChange(mBufferedPercentage);
+                            }
+                        }
                         Log.i(TAG, "mBufferedPercentageRunnable mBufferedPercentage: " + mBufferedPercentage);
                     }
                 }

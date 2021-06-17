@@ -26,8 +26,10 @@ import com.zay.common.listeners.OnMPlayingTimeChangeListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Zdw on 2021/04/21 14:31
@@ -36,29 +38,69 @@ public class MPlayerBJYImpl implements MPlayer {
 
     private Map<String, Integer> mDefinitions = new HashMap<>();
     private IBJYVideoPlayer mVideoPlayer;
-    private OnMPlayingTimeChangeListener mOnMPlayingTimeChangeListener;
-    private OnMBufferedUpdateListener mOnMBufferedUpdateListener;
-    private OnMBufferingListener mOnMBufferingListener;
-    private OnMPlayerStatusChangeListener mOnMPlayerStatusChangeListener;
+    private Set<OnMPlayingTimeChangeListener> mOnMPlayingTimeChangeListenerSet = new HashSet<>();
+    private Set<OnMBufferedUpdateListener> mOnMBufferedUpdateListenerSet = new HashSet<>();
+    private Set<OnMBufferingListener> mOnMBufferingListenerSet = new HashSet<>();
+    private Set<OnMPlayerStatusChangeListener> mOnMPlayerStatusChangeListenerSet = new HashSet<>();
 
     @Override
-    public void setOnMPlayingTimeChangeListener(OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListener = listener;
+    public void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
+        mOnMPlayingTimeChangeListenerSet.add(listener);
     }
 
     @Override
-    public void setOnMBufferedUpdateListener(OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListener = listener;
+    public void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
+        mOnMPlayingTimeChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void setOnMBufferingListener(OnMBufferingListener listener) {
-        mOnMBufferingListener = listener;
+    public void removeAllOnMPlayingTimeChangeListener() {
+        mOnMPlayingTimeChangeListenerSet.clear();
     }
 
     @Override
-    public void setOnMPlayerStatusChangeListener(OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListener = listener;
+    public void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
+        mOnMBufferedUpdateListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
+        mOnMBufferedUpdateListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMBufferedUpdateListener() {
+        mOnMBufferedUpdateListenerSet.clear();
+    }
+
+    @Override
+    public void addOnMBufferingListener(@NonNull OnMBufferingListener listener) {
+        mOnMBufferingListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMBufferingListener(@NonNull OnMBufferingListener listener) {
+        mOnMBufferingListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMBufferingListener() {
+        mOnMBufferingListenerSet.clear();
+    }
+
+    @Override
+    public void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
+        mOnMPlayerStatusChangeListenerSet.add(listener);
+    }
+
+    @Override
+    public void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
+        mOnMPlayerStatusChangeListenerSet.remove(listener);
+    }
+
+    @Override
+    public void removeAllOnMPlayerStatusChangeListener() {
+        mOnMPlayerStatusChangeListenerSet.clear();
     }
 
     @Override
@@ -239,40 +281,64 @@ public class MPlayerBJYImpl implements MPlayer {
         mVideoPlayer.addOnPlayingTimeChangeListener(new OnPlayingTimeChangeListener() {
             @Override
             public void onPlayingTimeChange(int currentTime, int duration) {
-                if (mOnMPlayingTimeChangeListener != null)
-                    mOnMPlayingTimeChangeListener.onPlayingTimeChange(currentTime, duration);
+                for (OnMPlayingTimeChangeListener listener : mOnMPlayingTimeChangeListenerSet) {
+                    if (listener != null) {
+                        listener.onPlayingTimeChange(currentTime, duration);
+                    }
+                }
             }
         });
         mVideoPlayer.addOnBufferUpdateListener(new OnBufferedUpdateListener() {
             @Override
             public void onBufferedPercentageChange(int bufferedPercentage) {
-                if (mOnMBufferedUpdateListener != null)
-                    mOnMBufferedUpdateListener.onBufferedPercentageChange(bufferedPercentage);
+                for (OnMBufferedUpdateListener listener : mOnMBufferedUpdateListenerSet) {
+                    if (listener != null) {
+                        listener.onBufferedPercentageChange(bufferedPercentage);
+                    }
+                }
             }
         });
         mVideoPlayer.addOnBufferingListener(new OnBufferingListener() {
             @Override
             public void onBufferingStart() {
-                if (mOnMBufferingListener != null)
-                    mOnMBufferingListener.onBufferingStart();
+                for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                    if (listener != null) {
+                        listener.onBufferingStart();
+                    }
+                }
             }
 
             @Override
             public void onBufferingEnd() {
-                if (mOnMBufferingListener != null)
-                    mOnMBufferingListener.onBufferingEnd();
+                for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                    if (listener != null) {
+                        listener.onBufferingEnd();
+                    }
+                }
             }
         });
         mVideoPlayer.addOnPlayerStatusChangeListener(new OnPlayerStatusChangeListener() {
             @Override
             public void onStatusChange(PlayerStatus playerStatus) {
-                if (mOnMPlayerStatusChangeListener != null) {
+                if (mOnMPlayerStatusChangeListenerSet.size() > 0) {
                     if (playerStatus == PlayerStatus.STATE_PREPARED) {
-                        mOnMPlayerStatusChangeListener.onPrepared();
+                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                            if (listener != null) {
+                                listener.onPrepared();
+                            }
+                        }
                     } else if (playerStatus == PlayerStatus.STATE_PAUSED) {
-                        mOnMPlayerStatusChangeListener.onPaused();
+                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                            if (listener != null) {
+                                listener.onPaused();
+                            }
+                        }
                     } else if (playerStatus == PlayerStatus.STATE_PLAYBACK_COMPLETED) {
-                        mOnMPlayerStatusChangeListener.onCompleted();
+                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                            if (listener != null) {
+                                listener.onCompleted();
+                            }
+                        }
                     }
                 }
             }

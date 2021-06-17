@@ -16,6 +16,7 @@ import com.bokecc.sdk.mobile.play.DWMediaPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.zay.common.MPlayer;
 import com.zay.common.PlayerMode;
+import com.zay.common.listeners.OnMBufferingListener;
 import com.zay.common.listeners.OnMPlayerStatusChangeListener;
 import com.zay.player_bjy.MPlayerBJYImpl;
 import com.zay.player_cc.MPlayerCCImpl;
@@ -66,16 +67,20 @@ public class Main2Activity extends AppCompatActivity {
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_BJY) {
             mMPlayer.setAutoPlay(true);
             mMPlayer.setPreferredDefinition(VideoDefinition._1080P.getType());
-            mMPlayer.setupOnlineVideoWithId("69115957", "zUOmwxiqv_U3Gu_x5aiohdaJqbP-km6stv7k6_ZZMWiKVcCqpqYKMSou22apgAA0");
+            mMPlayer.setupOnlineVideoWithId("69139897", "RvtdU2ui_1o3Gu_x5aiohRV5jfNY6PhlARMucGbgTnUhBmmibqtuMSou22apgAA0");
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_EXO) {
             mMPlayer.setAutoPlay(true);
-            mMPlayer.setupOnlineVideoWithId("https://www.apple.com/105/media/us/iphone-x/2017/01df5b43-28e4-4848-bf20-490c34a926a7/films/feature/iphone-x-feature-tpl-cc-us-20170912_1280x720h.mp4", null);
+            mMPlayer.setupOnlineVideoWithId("https://cz-video-view.oss-cn-beijing.aliyuncs.com/20201217/ca6d1674a038a786ab265d3fb1836a9c.mp4", null);
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mMPlayer.removeAllOnMPlayingTimeChangeListener();
+        mMPlayer.removeAllOnMBufferedUpdateListener();
+        mMPlayer.removeAllOnMBufferingListener();
+        mMPlayer.removeAllOnMPlayerStatusChangeListener();
         if (mUnbinder != null) {
             mUnbinder.unbind();
             mUnbinder = null;
@@ -122,7 +127,7 @@ public class Main2Activity extends AppCompatActivity {
             mMPlayer = new MPlayerBJYImpl.Builder(this)
                     .setSupportBackgroundAudio(false)
                     .setSupportBreakPointPlay(false)
-                    .setSupportLooping(true)
+                    .setSupportLooping(false)
                     .setLifecycle(getLifecycle())
                     .setUserInfo(null, null)
                     .build();
@@ -140,20 +145,31 @@ public class Main2Activity extends AppCompatActivity {
             mCcPlayerView.setVisibility(View.GONE);
             mBjyPlayerView.setVisibility(View.GONE);
         }
-        mMPlayer.setOnMPlayingTimeChangeListener((currentTime, duration) -> {
+        mMPlayer.addOnMPlayingTimeChangeListener((currentTime, duration) -> {
             mTvCurrentTime.setText(millSecondsToStr(currentTime * 1000));
             mTvDuration.setText(millSecondsToStr(duration * 1000));
             mSbProgress.setProgress(mSbProgress.getMax() * currentTime / duration);
             mIvStartPause.setImageResource(R.drawable.small_stop_ic);//播放中
         });
-        mMPlayer.setOnMBufferedUpdateListener(bufferedPercentage -> {
+        mMPlayer.addOnMBufferedUpdateListener(bufferedPercentage -> {
             //视频缓冲进度
             mSbProgress.setSecondaryProgress(bufferedPercentage);
         });
-        mMPlayer.setOnMBufferingListener(null);
-        mMPlayer.setOnMPlayerStatusChangeListener(new OnMPlayerStatusChangeListener() {
+        mMPlayer.addOnMBufferingListener(new OnMBufferingListener() {
+            @Override
+            public void onBufferingStart() {
+                Log.i(TAG, "onBufferingStart: ");
+            }
+
+            @Override
+            public void onBufferingEnd() {
+                Log.i(TAG, "onBufferingEnd: ");
+            }
+        });
+        mMPlayer.addOnMPlayerStatusChangeListener(new OnMPlayerStatusChangeListener() {
             @Override
             public void onPrepared() {//视频准备完成
+                Log.i(TAG, "onPrepared: ");
                 if (mMPlayer.isPlaying()) {//自动播放
                     mIvStartPause.setImageResource(R.drawable.small_stop_ic);
                 } else {//不自动播放
@@ -164,11 +180,13 @@ public class Main2Activity extends AppCompatActivity {
 
             @Override
             public void onPaused() {//视频被暂停
+                Log.i(TAG, "onPaused: ");
                 mIvStartPause.setImageResource(R.drawable.small_begin_ic);
             }
 
             @Override
             public void onCompleted() {//视频播放完成
+                Log.i(TAG, "onCompleted: ");
                 mIvStartPause.setImageResource(R.drawable.small_begin_ic);
             }
         });
@@ -195,7 +213,7 @@ public class Main2Activity extends AppCompatActivity {
                             Integer definition = supportedDefinitions.get(definitionNames.get(which));
                             if (definition != null) {
                                 boolean result = mMPlayer.changeDefinition(definition);
-                                Log.e(TAG, "changeDefinition: " + result);
+                                Log.i(TAG, "changeDefinition: " + result);
                             }
                         }).create().show();
                 break;

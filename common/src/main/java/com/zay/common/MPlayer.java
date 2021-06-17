@@ -2,6 +2,7 @@ package com.zay.common;
 
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.zay.common.listeners.OnMBufferedUpdateListener;
@@ -16,13 +17,30 @@ import java.util.Map;
  */
 
 public interface MPlayer {
-    void setOnMPlayingTimeChangeListener(OnMPlayingTimeChangeListener listener);
 
-    void setOnMBufferedUpdateListener(OnMBufferedUpdateListener listener);
+    void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener);
 
-    void setOnMBufferingListener(OnMBufferingListener listener);
+    void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener);
 
-    void setOnMPlayerStatusChangeListener(OnMPlayerStatusChangeListener listener);
+    void removeAllOnMPlayingTimeChangeListener();
+
+    void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener);
+
+    void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener);
+
+    void removeAllOnMBufferedUpdateListener();
+
+    void addOnMBufferingListener(@NonNull OnMBufferingListener listener);
+
+    void removeOnMBufferingListener(@NonNull OnMBufferingListener listener);
+
+    void removeAllOnMBufferingListener();
+
+    void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener);
+
+    void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener);
+
+    void removeAllOnMPlayerStatusChangeListener();
 
     void bindPlayerView(FrameLayout playerView);
 
