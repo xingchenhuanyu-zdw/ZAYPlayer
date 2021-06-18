@@ -19,10 +19,10 @@ import com.baijiayun.videoplayer.listeners.OnPlayingTimeChangeListener;
 import com.baijiayun.videoplayer.player.PlayerStatus;
 import com.baijiayun.videoplayer.widget.BJYPlayerView;
 import com.zay.common.MPlayer;
-import com.zay.common.listeners.OnMBufferedUpdateListener;
-import com.zay.common.listeners.OnMBufferingListener;
-import com.zay.common.listeners.OnMPlayerStatusChangeListener;
-import com.zay.common.listeners.OnMPlayingTimeChangeListener;
+import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
+import com.zay.common.listeners.ZAYOnBufferingListener;
+import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
+import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -38,69 +38,69 @@ public class MPlayerBJYImpl implements MPlayer {
 
     private Map<String, Integer> mDefinitions = new HashMap<>();
     private IBJYVideoPlayer mVideoPlayer;
-    private Set<OnMPlayingTimeChangeListener> mOnMPlayingTimeChangeListenerSet = new HashSet<>();
-    private Set<OnMBufferedUpdateListener> mOnMBufferedUpdateListenerSet = new HashSet<>();
-    private Set<OnMBufferingListener> mOnMBufferingListenerSet = new HashSet<>();
-    private Set<OnMPlayerStatusChangeListener> mOnMPlayerStatusChangeListenerSet = new HashSet<>();
+    private Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
+    private Set<ZAYOnBufferedUpdateListener> mZAYOnBufferedUpdateListenerSet = new HashSet<>();
+    private Set<ZAYOnBufferingListener> mZAYOnBufferingListenerSet = new HashSet<>();
+    private Set<ZAYOnPlayerStatusChangeListener> mZAYOnPlayerStatusChangeListenerSet = new HashSet<>();
 
     @Override
-    public void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListenerSet.add(listener);
+    public void addOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
+        mZAYOnPlayingTimeChangeListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListenerSet.remove(listener);
+    public void removeOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
+        mZAYOnPlayingTimeChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMPlayingTimeChangeListener() {
-        mOnMPlayingTimeChangeListenerSet.clear();
+    public void removeAllOnPlayingTimeChangeListener() {
+        mZAYOnPlayingTimeChangeListenerSet.clear();
     }
 
     @Override
-    public void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListenerSet.add(listener);
+    public void addOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener) {
+        mZAYOnBufferedUpdateListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListenerSet.remove(listener);
+    public void removeOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener) {
+        mZAYOnBufferedUpdateListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMBufferedUpdateListener() {
-        mOnMBufferedUpdateListenerSet.clear();
+    public void removeAllOnBufferedUpdateListener() {
+        mZAYOnBufferedUpdateListenerSet.clear();
     }
 
     @Override
-    public void addOnMBufferingListener(@NonNull OnMBufferingListener listener) {
-        mOnMBufferingListenerSet.add(listener);
+    public void addOnBufferingListener(@NonNull ZAYOnBufferingListener listener) {
+        mZAYOnBufferingListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMBufferingListener(@NonNull OnMBufferingListener listener) {
-        mOnMBufferingListenerSet.remove(listener);
+    public void removeOnBufferingListener(@NonNull ZAYOnBufferingListener listener) {
+        mZAYOnBufferingListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMBufferingListener() {
-        mOnMBufferingListenerSet.clear();
+    public void removeAllOnBufferingListener() {
+        mZAYOnBufferingListenerSet.clear();
     }
 
     @Override
-    public void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListenerSet.add(listener);
+    public void addOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener) {
+        mZAYOnPlayerStatusChangeListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListenerSet.remove(listener);
+    public void removeOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener) {
+        mZAYOnPlayerStatusChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMPlayerStatusChangeListener() {
-        mOnMPlayerStatusChangeListenerSet.clear();
+    public void removeAllOnPlayerStatusChangeListener() {
+        mZAYOnPlayerStatusChangeListenerSet.clear();
     }
 
     @Override
@@ -281,7 +281,7 @@ public class MPlayerBJYImpl implements MPlayer {
         mVideoPlayer.addOnPlayingTimeChangeListener(new OnPlayingTimeChangeListener() {
             @Override
             public void onPlayingTimeChange(int currentTime, int duration) {
-                for (OnMPlayingTimeChangeListener listener : mOnMPlayingTimeChangeListenerSet) {
+                for (ZAYOnPlayingTimeChangeListener listener : mZAYOnPlayingTimeChangeListenerSet) {
                     if (listener != null) {
                         listener.onPlayingTimeChange(currentTime, duration);
                     }
@@ -291,7 +291,7 @@ public class MPlayerBJYImpl implements MPlayer {
         mVideoPlayer.addOnBufferUpdateListener(new OnBufferedUpdateListener() {
             @Override
             public void onBufferedPercentageChange(int bufferedPercentage) {
-                for (OnMBufferedUpdateListener listener : mOnMBufferedUpdateListenerSet) {
+                for (ZAYOnBufferedUpdateListener listener : mZAYOnBufferedUpdateListenerSet) {
                     if (listener != null) {
                         listener.onBufferedPercentageChange(bufferedPercentage);
                     }
@@ -301,7 +301,7 @@ public class MPlayerBJYImpl implements MPlayer {
         mVideoPlayer.addOnBufferingListener(new OnBufferingListener() {
             @Override
             public void onBufferingStart() {
-                for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
                     if (listener != null) {
                         listener.onBufferingStart();
                     }
@@ -310,7 +310,7 @@ public class MPlayerBJYImpl implements MPlayer {
 
             @Override
             public void onBufferingEnd() {
-                for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
                     if (listener != null) {
                         listener.onBufferingEnd();
                     }
@@ -320,21 +320,21 @@ public class MPlayerBJYImpl implements MPlayer {
         mVideoPlayer.addOnPlayerStatusChangeListener(new OnPlayerStatusChangeListener() {
             @Override
             public void onStatusChange(PlayerStatus playerStatus) {
-                if (mOnMPlayerStatusChangeListenerSet.size() > 0) {
+                if (mZAYOnPlayerStatusChangeListenerSet.size() > 0) {
                     if (playerStatus == PlayerStatus.STATE_PREPARED) {
-                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                        for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                             if (listener != null) {
                                 listener.onPrepared();
                             }
                         }
                     } else if (playerStatus == PlayerStatus.STATE_PAUSED) {
-                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                        for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                             if (listener != null) {
                                 listener.onPaused();
                             }
                         }
                     } else if (playerStatus == PlayerStatus.STATE_PLAYBACK_COMPLETED) {
-                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                        for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                             if (listener != null) {
                                 listener.onCompleted();
                             }

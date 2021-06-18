@@ -22,10 +22,10 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.ui.StyledPlayerView;
 import com.zay.common.MPlayer;
-import com.zay.common.listeners.OnMBufferedUpdateListener;
-import com.zay.common.listeners.OnMBufferingListener;
-import com.zay.common.listeners.OnMPlayerStatusChangeListener;
-import com.zay.common.listeners.OnMPlayingTimeChangeListener;
+import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
+import com.zay.common.listeners.ZAYOnBufferingListener;
+import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
+import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -43,69 +43,69 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
     private boolean mIsPrepared = false;
     private boolean mIsAutoPaused = false;
     private SimpleExoPlayer mExoPlayer;
-    private Set<OnMPlayingTimeChangeListener> mOnMPlayingTimeChangeListenerSet = new HashSet<>();
-    private Set<OnMBufferedUpdateListener> mOnMBufferedUpdateListenerSet = new HashSet<>();
-    private Set<OnMBufferingListener> mOnMBufferingListenerSet = new HashSet<>();
-    private Set<OnMPlayerStatusChangeListener> mOnMPlayerStatusChangeListenerSet = new HashSet<>();
+    private Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
+    private Set<ZAYOnBufferedUpdateListener> mZAYOnBufferedUpdateListenerSet = new HashSet<>();
+    private Set<ZAYOnBufferingListener> mZAYOnBufferingListenerSet = new HashSet<>();
+    private Set<ZAYOnPlayerStatusChangeListener> mZAYOnPlayerStatusChangeListenerSet = new HashSet<>();
 
     @Override
-    public void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListenerSet.add(listener);
+    public void addOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
+        mZAYOnPlayingTimeChangeListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListenerSet.remove(listener);
+    public void removeOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
+        mZAYOnPlayingTimeChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMPlayingTimeChangeListener() {
-        mOnMPlayingTimeChangeListenerSet.clear();
+    public void removeAllOnPlayingTimeChangeListener() {
+        mZAYOnPlayingTimeChangeListenerSet.clear();
     }
 
     @Override
-    public void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListenerSet.add(listener);
+    public void addOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener) {
+        mZAYOnBufferedUpdateListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListenerSet.remove(listener);
+    public void removeOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener) {
+        mZAYOnBufferedUpdateListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMBufferedUpdateListener() {
-        mOnMBufferedUpdateListenerSet.clear();
+    public void removeAllOnBufferedUpdateListener() {
+        mZAYOnBufferedUpdateListenerSet.clear();
     }
 
     @Override
-    public void addOnMBufferingListener(@NonNull OnMBufferingListener listener) {
-        mOnMBufferingListenerSet.add(listener);
+    public void addOnBufferingListener(@NonNull ZAYOnBufferingListener listener) {
+        mZAYOnBufferingListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMBufferingListener(@NonNull OnMBufferingListener listener) {
-        mOnMBufferingListenerSet.remove(listener);
+    public void removeOnBufferingListener(@NonNull ZAYOnBufferingListener listener) {
+        mZAYOnBufferingListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMBufferingListener() {
-        mOnMBufferingListenerSet.clear();
+    public void removeAllOnBufferingListener() {
+        mZAYOnBufferingListenerSet.clear();
     }
 
     @Override
-    public void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListenerSet.add(listener);
+    public void addOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener) {
+        mZAYOnPlayerStatusChangeListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListenerSet.remove(listener);
+    public void removeOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener) {
+        mZAYOnPlayerStatusChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMPlayerStatusChangeListener() {
-        mOnMPlayerStatusChangeListenerSet.clear();
+    public void removeAllOnPlayerStatusChangeListener() {
+        mZAYOnPlayerStatusChangeListenerSet.clear();
     }
 
     @Override
@@ -171,7 +171,7 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
     public void pause() {
         if (mExoPlayer == null) return;
         if (isPlaying()) {// 之前正在播放时
-            for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+            for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                 if (listener != null) {
                     listener.onPaused();
                 }
@@ -315,7 +315,7 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
                     } else if (state == Player.STATE_BUFFERING) {// 正在缓冲
                         Log.i(TAG, "onPlaybackStateChanged state: STATE_BUFFERING");
                         mHandler.post(mBufferedPercentageRunnable);
-                        for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                        for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
                             if (listener != null) {
                                 listener.onBufferingStart();
                             }
@@ -326,19 +326,19 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
                         if (mExoPlayer.getPlayWhenReady()) {
                             mHandler.post(mTimeInfoRunnable);
                         }
-                        for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                        for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
                             if (listener != null) {
                                 listener.onBufferingEnd();
                             }
                         }
-                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                        for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                             if (listener != null) {
                                 listener.onPrepared();
                             }
                         }
                     } else if (state == Player.STATE_ENDED) {// 播放结束，全部视频播放完时才会触发
                         Log.i(TAG, "onPlaybackStateChanged state: STATE_ENDED");
-                        for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                        for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                             if (listener != null) {
                                 listener.onCompleted();
                             }
@@ -353,7 +353,7 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
         @Override
         public void run() {
             if (isPlaying()) {
-                for (OnMPlayingTimeChangeListener listener : mOnMPlayingTimeChangeListenerSet) {
+                for (ZAYOnPlayingTimeChangeListener listener : mZAYOnPlayingTimeChangeListenerSet) {
                     if (listener != null) {
                         listener.onPlayingTimeChange(getCurrentPosition(), getDuration());
                     }
@@ -368,11 +368,11 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
         @Override
         public void run() {
             if (mExoPlayer != null) {
-                if (mOnMBufferedUpdateListenerSet.size() > 0) {
+                if (mZAYOnBufferedUpdateListenerSet.size() > 0) {
                     int bufferedPercentage = mExoPlayer.getBufferedPercentage();
                     if (mBufferedPercentage != bufferedPercentage) {
                         mBufferedPercentage = bufferedPercentage;
-                        for (OnMBufferedUpdateListener listener : mOnMBufferedUpdateListenerSet) {
+                        for (ZAYOnBufferedUpdateListener listener : mZAYOnBufferedUpdateListenerSet) {
                             if (listener != null) {
                                 listener.onBufferedPercentageChange(mBufferedPercentage);
                             }

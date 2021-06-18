@@ -16,8 +16,8 @@ import com.bokecc.sdk.mobile.play.DWMediaPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.zay.common.MPlayer;
 import com.zay.common.PlayerMode;
-import com.zay.common.listeners.OnMBufferingListener;
-import com.zay.common.listeners.OnMPlayerStatusChangeListener;
+import com.zay.common.listeners.ZAYOnBufferingListener;
+import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
 import com.zay.player_bjy.MPlayerBJYImpl;
 import com.zay.player_cc.MPlayerCCImpl;
 import com.zay.player_cc.widget.CCPlayerView;
@@ -77,10 +77,10 @@ public class Main2Activity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mMPlayer.removeAllOnMPlayingTimeChangeListener();
-        mMPlayer.removeAllOnMBufferedUpdateListener();
-        mMPlayer.removeAllOnMBufferingListener();
-        mMPlayer.removeAllOnMPlayerStatusChangeListener();
+        mMPlayer.removeAllOnPlayingTimeChangeListener();
+        mMPlayer.removeAllOnBufferedUpdateListener();
+        mMPlayer.removeAllOnBufferingListener();
+        mMPlayer.removeAllOnPlayerStatusChangeListener();
         if (mUnbinder != null) {
             mUnbinder.unbind();
             mUnbinder = null;
@@ -145,17 +145,17 @@ public class Main2Activity extends AppCompatActivity {
             mCcPlayerView.setVisibility(View.GONE);
             mBjyPlayerView.setVisibility(View.GONE);
         }
-        mMPlayer.addOnMPlayingTimeChangeListener((currentTime, duration) -> {
+        mMPlayer.addOnPlayingTimeChangeListener((currentTime, duration) -> {
             mTvCurrentTime.setText(millSecondsToStr(currentTime * 1000));
             mTvDuration.setText(millSecondsToStr(duration * 1000));
             mSbProgress.setProgress(mSbProgress.getMax() * currentTime / duration);
             mIvStartPause.setImageResource(R.drawable.small_stop_ic);//播放中
         });
-        mMPlayer.addOnMBufferedUpdateListener(bufferedPercentage -> {
+        mMPlayer.addOnBufferedUpdateListener(bufferedPercentage -> {
             //视频缓冲进度
             mSbProgress.setSecondaryProgress(bufferedPercentage);
         });
-        mMPlayer.addOnMBufferingListener(new OnMBufferingListener() {
+        mMPlayer.addOnBufferingListener(new ZAYOnBufferingListener() {
             @Override
             public void onBufferingStart() {
                 Log.i(TAG, "onBufferingStart: ");
@@ -166,7 +166,7 @@ public class Main2Activity extends AppCompatActivity {
                 Log.i(TAG, "onBufferingEnd: ");
             }
         });
-        mMPlayer.addOnMPlayerStatusChangeListener(new OnMPlayerStatusChangeListener() {
+        mMPlayer.addOnPlayerStatusChangeListener(new ZAYOnPlayerStatusChangeListener() {
             @Override
             public void onPrepared() {//视频准备完成
                 Log.i(TAG, "onPrepared: ");

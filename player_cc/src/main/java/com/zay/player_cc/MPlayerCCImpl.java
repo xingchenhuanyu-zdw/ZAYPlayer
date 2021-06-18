@@ -19,10 +19,10 @@ import androidx.lifecycle.OnLifecycleEvent;
 import com.bokecc.sdk.mobile.drm.DRMServer;
 import com.bokecc.sdk.mobile.play.DWMediaPlayer;
 import com.zay.common.MPlayer;
-import com.zay.common.listeners.OnMBufferedUpdateListener;
-import com.zay.common.listeners.OnMBufferingListener;
-import com.zay.common.listeners.OnMPlayerStatusChangeListener;
-import com.zay.common.listeners.OnMPlayingTimeChangeListener;
+import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
+import com.zay.common.listeners.ZAYOnBufferingListener;
+import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
+import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
 import com.zay.player_cc.widget.CCPlayerView;
 
 import java.io.IOException;
@@ -50,69 +50,69 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     private int mDrmServerPort;
     private int mCurrentPosition = -1;
     private int mPreferredDefinition = DWMediaPlayer.NORMAL_DEFINITION;
-    private Set<OnMPlayingTimeChangeListener> mOnMPlayingTimeChangeListenerSet = new HashSet<>();
-    private Set<OnMBufferedUpdateListener> mOnMBufferedUpdateListenerSet = new HashSet<>();
-    private Set<OnMBufferingListener> mOnMBufferingListenerSet = new HashSet<>();
-    private Set<OnMPlayerStatusChangeListener> mOnMPlayerStatusChangeListenerSet = new HashSet<>();
+    private Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
+    private Set<ZAYOnBufferedUpdateListener> mZAYOnBufferedUpdateListenerSet = new HashSet<>();
+    private Set<ZAYOnBufferingListener> mZAYOnBufferingListenerSet = new HashSet<>();
+    private Set<ZAYOnPlayerStatusChangeListener> mZAYOnPlayerStatusChangeListenerSet = new HashSet<>();
 
     @Override
-    public void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListenerSet.add(listener);
+    public void addOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
+        mZAYOnPlayingTimeChangeListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener) {
-        mOnMPlayingTimeChangeListenerSet.remove(listener);
+    public void removeOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
+        mZAYOnPlayingTimeChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMPlayingTimeChangeListener() {
-        mOnMPlayingTimeChangeListenerSet.clear();
+    public void removeAllOnPlayingTimeChangeListener() {
+        mZAYOnPlayingTimeChangeListenerSet.clear();
     }
 
     @Override
-    public void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListenerSet.add(listener);
+    public void addOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener) {
+        mZAYOnBufferedUpdateListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener) {
-        mOnMBufferedUpdateListenerSet.remove(listener);
+    public void removeOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener) {
+        mZAYOnBufferedUpdateListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMBufferedUpdateListener() {
-        mOnMBufferedUpdateListenerSet.clear();
+    public void removeAllOnBufferedUpdateListener() {
+        mZAYOnBufferedUpdateListenerSet.clear();
     }
 
     @Override
-    public void addOnMBufferingListener(@NonNull OnMBufferingListener listener) {
-        mOnMBufferingListenerSet.add(listener);
+    public void addOnBufferingListener(@NonNull ZAYOnBufferingListener listener) {
+        mZAYOnBufferingListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMBufferingListener(@NonNull OnMBufferingListener listener) {
-        mOnMBufferingListenerSet.remove(listener);
+    public void removeOnBufferingListener(@NonNull ZAYOnBufferingListener listener) {
+        mZAYOnBufferingListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMBufferingListener() {
-        mOnMBufferingListenerSet.clear();
+    public void removeAllOnBufferingListener() {
+        mZAYOnBufferingListenerSet.clear();
     }
 
     @Override
-    public void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListenerSet.add(listener);
+    public void addOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener) {
+        mZAYOnPlayerStatusChangeListenerSet.add(listener);
     }
 
     @Override
-    public void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener) {
-        mOnMPlayerStatusChangeListenerSet.remove(listener);
+    public void removeOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener) {
+        mZAYOnPlayerStatusChangeListenerSet.remove(listener);
     }
 
     @Override
-    public void removeAllOnMPlayerStatusChangeListener() {
-        mOnMPlayerStatusChangeListenerSet.clear();
+    public void removeAllOnPlayerStatusChangeListener() {
+        mZAYOnPlayerStatusChangeListenerSet.clear();
     }
 
     @Override
@@ -163,7 +163,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     public void pause() {
         if (mMediaPlayer == null) return;
         if (isPlaying()) {// 之前正在播放时
-            for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+            for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                 if (listener != null) {
                     listener.onPaused();
                 }
@@ -371,13 +371,13 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
             public boolean onInfo(MediaPlayer mp, int what, int extra) {
                 Log.i(TAG, "onInfo what: " + what);
                 if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                    for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                    for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
                         if (listener != null) {
                             listener.onBufferingStart();
                         }
                     }
                 } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                    for (OnMBufferingListener listener : mOnMBufferingListenerSet) {
+                    for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
                         if (listener != null) {
                             listener.onBufferingEnd();
                         }
@@ -390,7 +390,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
             @Override
             public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                for (OnMBufferedUpdateListener listener : mOnMBufferedUpdateListenerSet) {
+                for (ZAYOnBufferedUpdateListener listener : mZAYOnBufferedUpdateListenerSet) {
                     if (listener != null) {
                         listener.onBufferedPercentageChange(percent);
                     }
@@ -412,7 +412,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
                     seekTo(mCurrentPosition);
                     mCurrentPosition = -1;
                 }
-                for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                     if (listener != null) {
                         listener.onPrepared();
                     }
@@ -425,7 +425,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
             public void onCompletion(MediaPlayer mp) {
                 // 未设置视频资源时，点击 CCPlayerView 会触发，排除掉
                 if (mMediaPlayer.getPlayInfo() == null) return;
-                for (OnMPlayerStatusChangeListener listener : mOnMPlayerStatusChangeListenerSet) {
+                for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
                     if (listener != null) {
                         listener.onCompleted();
                     }
@@ -453,7 +453,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         @Override
         public void run() {
             if (isPlaying()) {
-                for (OnMPlayingTimeChangeListener listener : mOnMPlayingTimeChangeListenerSet) {
+                for (ZAYOnPlayingTimeChangeListener listener : mZAYOnPlayingTimeChangeListenerSet) {
                     if (listener != null) {
                         listener.onPlayingTimeChange(getCurrentPosition(), getDuration());
                     }

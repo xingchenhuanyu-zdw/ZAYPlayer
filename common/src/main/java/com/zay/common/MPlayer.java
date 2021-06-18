@@ -5,10 +5,10 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.zay.common.listeners.OnMBufferedUpdateListener;
-import com.zay.common.listeners.OnMBufferingListener;
-import com.zay.common.listeners.OnMPlayerStatusChangeListener;
-import com.zay.common.listeners.OnMPlayingTimeChangeListener;
+import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
+import com.zay.common.listeners.ZAYOnBufferingListener;
+import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
+import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
 
 import java.util.Map;
 
@@ -18,29 +18,29 @@ import java.util.Map;
 
 public interface MPlayer {
 
-    void addOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener);
+    void addOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener);
 
-    void removeOnMPlayingTimeChangeListener(@NonNull OnMPlayingTimeChangeListener listener);
+    void removeOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener);
 
-    void removeAllOnMPlayingTimeChangeListener();
+    void removeAllOnPlayingTimeChangeListener();
 
-    void addOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener);
+    void addOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener);
 
-    void removeOnMBufferedUpdateListener(@NonNull OnMBufferedUpdateListener listener);
+    void removeOnBufferedUpdateListener(@NonNull ZAYOnBufferedUpdateListener listener);
 
-    void removeAllOnMBufferedUpdateListener();
+    void removeAllOnBufferedUpdateListener();
 
-    void addOnMBufferingListener(@NonNull OnMBufferingListener listener);
+    void addOnBufferingListener(@NonNull ZAYOnBufferingListener listener);
 
-    void removeOnMBufferingListener(@NonNull OnMBufferingListener listener);
+    void removeOnBufferingListener(@NonNull ZAYOnBufferingListener listener);
 
-    void removeAllOnMBufferingListener();
+    void removeAllOnBufferingListener();
 
-    void addOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener);
+    void addOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener);
 
-    void removeOnMPlayerStatusChangeListener(@NonNull OnMPlayerStatusChangeListener listener);
+    void removeOnPlayerStatusChangeListener(@NonNull ZAYOnPlayerStatusChangeListener listener);
 
-    void removeAllOnMPlayerStatusChangeListener();
+    void removeAllOnPlayerStatusChangeListener();
 
     void bindPlayerView(FrameLayout playerView);
 
