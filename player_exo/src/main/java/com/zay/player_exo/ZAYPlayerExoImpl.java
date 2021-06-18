@@ -5,7 +5,6 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,13 +18,13 @@ import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.ui.StyledPlayerView;
-import com.zay.common.MPlayer;
+import com.zay.common.ZAYPlayer;
 import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
 import com.zay.common.listeners.ZAYOnBufferingListener;
 import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
 import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
+import com.zay.common.widget.ZAYPlayerView;
+import com.zay.player_exo.widget.ZAYEXOPlayerView;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -34,11 +33,10 @@ import java.util.Set;
 /**
  * Created by Zdw on 2021/04/25 9:54
  */
-public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
+public class ZAYPlayerExoImpl implements ZAYPlayer, LifecycleObserver {
 
-    private static final String TAG = MPlayerExoImpl.class.getSimpleName();
+    private static final String TAG = ZAYPlayerExoImpl.class.getSimpleName();
     private boolean mSupportBackgroundAudio = true;
-    private Context mContext;
     private Handler mHandler;
     private boolean mIsPrepared = false;
     private boolean mIsAutoPaused = false;
@@ -109,13 +107,11 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
     }
 
     @Override
-    public void bindPlayerView(FrameLayout playerView) {
-        if (playerView instanceof PlayerView) {
-            ((PlayerView) playerView).setPlayer(mExoPlayer);
-            ((PlayerView) playerView).setUseController(false);
-        } else if (playerView instanceof StyledPlayerView) {
-            ((StyledPlayerView) playerView).setPlayer(mExoPlayer);
-            ((StyledPlayerView) playerView).setUseController(false);
+    public void bindPlayerView(ZAYPlayerView playerView) {
+        if (playerView instanceof ZAYEXOPlayerView) {
+            ZAYEXOPlayerView zayexoPlayerView = (ZAYEXOPlayerView) playerView;
+            zayexoPlayerView.getPlayerView().setPlayer(mExoPlayer);
+            zayexoPlayerView.setZAYPlayer(this);
         }
     }
 
@@ -251,7 +247,8 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
 
     }
 
-    private MPlayerExoImpl() {
+    private ZAYPlayerExoImpl() {
+        mHandler = new Handler(Looper.getMainLooper());
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
@@ -292,11 +289,6 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
 
     private void setLifecycle(@NonNull Lifecycle lifecycle) {
         lifecycle.addObserver(this);
-    }
-
-    private void setContext(@NonNull Context context) {
-        mContext = context;
-        mHandler = new Handler(Looper.getMainLooper());
     }
 
     private int mPlaybackState;
@@ -405,12 +397,11 @@ public class MPlayerExoImpl implements MPlayer, LifecycleObserver {
             return this;
         }
 
-        public MPlayerExoImpl build() {
-            MPlayerExoImpl playerFactory = new MPlayerExoImpl();
+        public ZAYPlayerExoImpl build() {
+            ZAYPlayerExoImpl playerFactory = new ZAYPlayerExoImpl();
             playerFactory.setSupportBackgroundAudio(mSupportBackgroundAudio);
             if (mLifecycle != null)
                 playerFactory.setLifecycle(mLifecycle);
-            playerFactory.setContext(mContext);
             @DefaultRenderersFactory.ExtensionRendererMode
             int extensionRendererMode = DefaultRenderersFactory.EXTENSION_RENDERER_MODE_OFF;
             RenderersFactory renderersFactory = new DefaultRenderersFactory(mContext).setExtensionRendererMode(extensionRendererMode);

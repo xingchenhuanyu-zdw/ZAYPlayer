@@ -1,7 +1,5 @@
 package com.zay.common;
 
-import android.widget.FrameLayout;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -9,6 +7,7 @@ import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
 import com.zay.common.listeners.ZAYOnBufferingListener;
 import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
 import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
+import com.zay.common.widget.ZAYPlayerView;
 
 import java.util.Map;
 
@@ -16,7 +15,7 @@ import java.util.Map;
  * Created by Zdw on 2021/01/19 16:02
  */
 
-public interface MPlayer {
+public interface ZAYPlayer {
 
     void addOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener);
 
@@ -42,7 +41,7 @@ public interface MPlayer {
 
     void removeAllOnPlayerStatusChangeListener();
 
-    void bindPlayerView(FrameLayout playerView);
+    void bindPlayerView(ZAYPlayerView playerView);
 
     void setAutoPlay(boolean autoPlay);
 

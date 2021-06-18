@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        versionCode 10
+        versionName "0.1.0"
     }
 
     buildTypes {
@@ -25,7 +25,7 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation project(path: ':common')
     api 'com.bokecc:commonLib:0.1.12'
-    api 'com.bokecc:CCVOD:3.15.1'
+    api 'com.bokecc:CCVOD:3.15.3'
     api 'com.bokecc:drm:1.2.1'
 
 }

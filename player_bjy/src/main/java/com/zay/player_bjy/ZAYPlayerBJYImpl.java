@@ -2,7 +2,7 @@ package com.zay.player_bjy;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.widget.FrameLayout;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,12 +17,13 @@ import com.baijiayun.videoplayer.listeners.OnBufferingListener;
 import com.baijiayun.videoplayer.listeners.OnPlayerStatusChangeListener;
 import com.baijiayun.videoplayer.listeners.OnPlayingTimeChangeListener;
 import com.baijiayun.videoplayer.player.PlayerStatus;
-import com.baijiayun.videoplayer.widget.BJYPlayerView;
-import com.zay.common.MPlayer;
+import com.zay.common.ZAYPlayer;
 import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
 import com.zay.common.listeners.ZAYOnBufferingListener;
 import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
 import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
+import com.zay.common.widget.ZAYPlayerView;
+import com.zay.player_bjy.widget.ZAYBJYPlayerView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,8 +35,9 @@ import java.util.Set;
 /**
  * Created by Zdw on 2021/04/21 14:31
  */
-public class MPlayerBJYImpl implements MPlayer {
+public class ZAYPlayerBJYImpl implements ZAYPlayer {
 
+    private static final String TAG = ZAYPlayerBJYImpl.class.getSimpleName();
     private Map<String, Integer> mDefinitions = new HashMap<>();
     private IBJYVideoPlayer mVideoPlayer;
     private Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
@@ -104,10 +106,12 @@ public class MPlayerBJYImpl implements MPlayer {
     }
 
     @Override
-    public void bindPlayerView(FrameLayout playerView) {
+    public void bindPlayerView(ZAYPlayerView playerView) {
         if (mVideoPlayer == null) return;
-        if (playerView instanceof BJYPlayerView) {
-            mVideoPlayer.bindPlayerView((BJYPlayerView) playerView);
+        if (playerView instanceof ZAYBJYPlayerView) {
+            ZAYBJYPlayerView zaybjyPlayerView = (ZAYBJYPlayerView) playerView;
+            mVideoPlayer.bindPlayerView(zaybjyPlayerView.getPlayerView());
+            zaybjyPlayerView.setZAYPlayer(this);
         }
     }
 
@@ -267,7 +271,7 @@ public class MPlayerBJYImpl implements MPlayer {
         }
     }
 
-    private MPlayerBJYImpl() {
+    private ZAYPlayerBJYImpl() {
         mDefinitions.put(VideoDefinition._1080P.name(), VideoDefinition._1080P.getType());
         mDefinitions.put(VideoDefinition._720P.name(), VideoDefinition._720P.getType());
         mDefinitions.put(VideoDefinition.SHD.name(), VideoDefinition.SHD.getType());
@@ -320,6 +324,7 @@ public class MPlayerBJYImpl implements MPlayer {
         mVideoPlayer.addOnPlayerStatusChangeListener(new OnPlayerStatusChangeListener() {
             @Override
             public void onStatusChange(PlayerStatus playerStatus) {
+                Log.i(TAG, "onStatusChange playerStatus: " + playerStatus);
                 if (mZAYOnPlayerStatusChangeListenerSet.size() > 0) {
                     if (playerStatus == PlayerStatus.STATE_PREPARED) {
                         for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
@@ -385,7 +390,7 @@ public class MPlayerBJYImpl implements MPlayer {
             return this;
         }
 
-        public MPlayerBJYImpl build() {
+        public ZAYPlayerBJYImpl build() {
             IBJYVideoPlayer videoPlayer = new VideoPlayerFactory.Builder()
                     // 是否开启后台音频播放
                     .setSupportBackgroundAudio(mSupportBackgroundAudio)
@@ -402,7 +407,7 @@ public class MPlayerBJYImpl implements MPlayer {
                     .setContext(mContext)
                     .setUserInfo(mUserName, mUserIdentity)
                     .build();
-            MPlayerBJYImpl playerFactory = new MPlayerBJYImpl();
+            ZAYPlayerBJYImpl playerFactory = new ZAYPlayerBJYImpl();
             playerFactory.setVideoPlayer(videoPlayer);
             return playerFactory;
         }

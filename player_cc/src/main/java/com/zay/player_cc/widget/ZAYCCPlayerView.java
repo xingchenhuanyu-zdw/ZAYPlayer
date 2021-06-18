@@ -7,17 +7,20 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.TextureView;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.zay.common.ZAYPlayer;
+import com.zay.common.widget.ZAYPlayerControlView;
+import com.zay.common.widget.ZAYPlayerView;
+
 /**
  * Created by Zdw on 2021/03/22 11:14
  */
-public class CCPlayerView extends FrameLayout implements TextureView.SurfaceTextureListener {
+public class ZAYCCPlayerView extends ZAYPlayerView implements TextureView.SurfaceTextureListener {
 
-    private static final String TAG = "CCPlayerView";
+    private static final String TAG = ZAYPlayerView.class.getSimpleName();
     private TextureView mTextureView;
     private TextureView.SurfaceTextureListener mSurfaceTextureListener;
     private int mVideoWidth;
@@ -25,19 +28,24 @@ public class CCPlayerView extends FrameLayout implements TextureView.SurfaceText
     private int mViewWidth;
     private int mViewHeight;
 
-    public CCPlayerView(@NonNull Context context) {
+    public void setZAYPlayer(@NonNull ZAYPlayer zayPlayer) {
+        mZAYPlayer = zayPlayer;
+        mControlView.setZAYPlayer(zayPlayer);
+    }
+
+    public ZAYCCPlayerView(@NonNull Context context) {
         this(context, null);
     }
 
-    public CCPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
+    public ZAYCCPlayerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public CCPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public ZAYCCPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         this(context, attrs, defStyleAttr, 0);
     }
 
-    public CCPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
+    public ZAYCCPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init();
     }
@@ -46,10 +54,15 @@ public class CCPlayerView extends FrameLayout implements TextureView.SurfaceText
         mSurfaceTextureListener = surfaceTextureListener;
     }
 
-    private void init() {
+    protected void init() {
         mTextureView = new TextureView(getContext());
         mTextureView.setSurfaceTextureListener(this);
         addView(mTextureView, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mControlView = new ZAYPlayerControlView(getContext());
+        LayoutParams layoutParams = new LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.gravity = Gravity.BOTTOM;
+        addView(mControlView, layoutParams);
     }
 
     private void updateTextureViewSize() {

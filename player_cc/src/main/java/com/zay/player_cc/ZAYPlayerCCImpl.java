@@ -8,7 +8,6 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
-import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,12 +17,13 @@ import androidx.lifecycle.OnLifecycleEvent;
 
 import com.bokecc.sdk.mobile.drm.DRMServer;
 import com.bokecc.sdk.mobile.play.DWMediaPlayer;
-import com.zay.common.MPlayer;
+import com.zay.common.ZAYPlayer;
 import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
 import com.zay.common.listeners.ZAYOnBufferingListener;
 import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
 import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
-import com.zay.player_cc.widget.CCPlayerView;
+import com.zay.common.widget.ZAYPlayerView;
+import com.zay.player_cc.widget.ZAYCCPlayerView;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -33,9 +33,9 @@ import java.util.Set;
 /**
  * Created by Zdw on 2021/04/21 14:20
  */
-public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListener, LifecycleObserver {
+public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureListener, LifecycleObserver {
 
-    private static final String TAG = MPlayerCCImpl.class.getSimpleName();
+    private static final String TAG = ZAYPlayerCCImpl.class.getSimpleName();
     private boolean mSupportBackgroundAudio = true;
     private Context mContext;
     private Handler mHandler;
@@ -44,7 +44,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     private boolean mIsPrepared = false;
     private boolean mIsAutoPaused = false;
     private Surface mSurface;
-    private CCPlayerView mCCPlayerView;
+    private ZAYCCPlayerView mZAYCCPlayerView;
     private DWMediaPlayer mMediaPlayer;
     private DRMServer mDRMServer;
     private int mDrmServerPort;
@@ -116,11 +116,12 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     }
 
     @Override
-    public void bindPlayerView(FrameLayout playerView) {
+    public void bindPlayerView(ZAYPlayerView playerView) {
         if (mMediaPlayer == null) return;
-        if (playerView instanceof CCPlayerView) {
-            mCCPlayerView = (CCPlayerView) playerView;
-            mCCPlayerView.setSurfaceTextureListener(this);
+        if (playerView instanceof ZAYCCPlayerView) {
+            mZAYCCPlayerView = (ZAYCCPlayerView) playerView;
+            mZAYCCPlayerView.setSurfaceTextureListener(this);
+            mZAYCCPlayerView.setZAYPlayer(this);
         }
     }
 
@@ -334,7 +335,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
         release();
     }
 
-    private MPlayerCCImpl() {
+    private ZAYPlayerCCImpl() {
     }
 
     private void setSupportBackgroundAudio(boolean supportBackgroundAudio) {
@@ -365,6 +366,7 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
     private void setMediaPlayer(DWMediaPlayer mediaPlayer) {
         mMediaPlayer = mediaPlayer;
         mMediaPlayer.setDRMServerPort(mDrmServerPort);
+        mMediaPlayer.setScreenOnWhilePlaying(true);
         // 视频缓冲状态
         mMediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
             @Override
@@ -403,8 +405,8 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
             public void onPrepared(MediaPlayer mp) {
                 Log.i(TAG, "setOnPreparedListener");
                 mIsPrepared = true;
-                if (mCCPlayerView != null)
-                    mCCPlayerView.onVideoSizeChanged(mp.getVideoWidth(), mp.getVideoHeight());
+                if (mZAYCCPlayerView != null)
+                    mZAYCCPlayerView.onVideoSizeChanged(mp.getVideoWidth(), mp.getVideoHeight());
                 if (mAutoPlay) {
                     start();
                 }
@@ -499,8 +501,8 @@ public class MPlayerCCImpl implements MPlayer, TextureView.SurfaceTextureListene
             return this;
         }
 
-        public MPlayerCCImpl build() {
-            MPlayerCCImpl playerFactory = new MPlayerCCImpl();
+        public ZAYPlayerCCImpl build() {
+            ZAYPlayerCCImpl playerFactory = new ZAYPlayerCCImpl();
             playerFactory.setSupportBackgroundAudio(mSupportBackgroundAudio);
             if (mLifecycle != null)
                 playerFactory.setLifecycle(mLifecycle);
