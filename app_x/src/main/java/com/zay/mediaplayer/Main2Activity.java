@@ -10,33 +10,21 @@ import com.bokecc.sdk.mobile.play.DWMediaPlayer;
 import com.zay.common.PlayerMode;
 import com.zay.common.ZAYPlayer;
 import com.zay.common.formatter.DefaultTimeFormatter;
+import com.zay.mediaplayer.databinding.ActivityMain2Binding;
 import com.zay.player_bjy.ZAYPlayerBJYImpl;
-import com.zay.player_bjy.widget.ZAYBJYPlayerView;
 import com.zay.player_cc.ZAYPlayerCCImpl;
-import com.zay.player_cc.widget.ZAYCCPlayerView;
 import com.zay.player_exo.ZAYPlayerExoImpl;
-import com.zay.player_exo.widget.ZAYEXOPlayerView;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 public class Main2Activity extends AppCompatActivity {
 
     private ZAYPlayer mZAYPlayer;
-    private Unbinder mUnbinder;
-    @BindView(R.id.cc_player_view)
-    ZAYCCPlayerView mCcPlayerView;
-    @BindView(R.id.bjy_player_view)
-    ZAYBJYPlayerView mBjyPlayerView;
-    @BindView(R.id.exo_player_view)
-    ZAYEXOPlayerView mExoPlayerView;
+    private ActivityMain2Binding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main2);
-        mUnbinder = ButterKnife.bind(this);
+        mBinding = ActivityMain2Binding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         initPlayerWrapper();
         if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_CC) {
             mZAYPlayer.setAutoPlay(true);
@@ -59,10 +47,6 @@ public class Main2Activity extends AppCompatActivity {
         mZAYPlayer.removeAllOnBufferedUpdateListener();
         mZAYPlayer.removeAllOnBufferingListener();
         mZAYPlayer.removeAllOnPlayerStatusChangeListener();
-        if (mUnbinder != null) {
-            mUnbinder.unbind();
-            mUnbinder = null;
-        }
     }
 
     private void initPlayerWrapper() {
@@ -74,11 +58,11 @@ public class Main2Activity extends AppCompatActivity {
                     .setApiKey("BnPoazIUwhRa1Sk5AVBP7hk8dDk7a3Aw")
                     .setVerificationCode(null)
                     .build();
-            mZAYPlayer.bindPlayerView(mCcPlayerView);
-            mCcPlayerView.setTimeFormatter(new DefaultTimeFormatter());// 自定义时间格式
-            mCcPlayerView.setVisibility(View.VISIBLE);
-            mBjyPlayerView.setVisibility(View.GONE);
-            mExoPlayerView.setVisibility(View.GONE);
+            mZAYPlayer.bindPlayerView(mBinding.ccPlayerView);
+            mBinding.ccPlayerView.setTimeFormatter(new DefaultTimeFormatter());// 自定义时间格式
+            mBinding.ccPlayerView.setVisibility(View.VISIBLE);
+            mBinding.bjyPlayerView.setVisibility(View.GONE);
+            mBinding.exoPlayerView.setVisibility(View.GONE);
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_BJY) {
             mZAYPlayer = new ZAYPlayerBJYImpl.Builder(this)
                     .setSupportBackgroundAudio(false)
@@ -87,19 +71,21 @@ public class Main2Activity extends AppCompatActivity {
                     .setLifecycle(getLifecycle())
                     .setUserInfo(null, null)
                     .build();
-            mZAYPlayer.bindPlayerView(mBjyPlayerView);
-            mBjyPlayerView.setVisibility(View.VISIBLE);
-            mCcPlayerView.setVisibility(View.GONE);
-            mExoPlayerView.setVisibility(View.GONE);
+            mZAYPlayer.bindPlayerView(mBinding.bjyPlayerView);
+            mBinding.bjyPlayerView.setTimeFormatter(new DefaultTimeFormatter());// 自定义时间格式
+            mBinding.bjyPlayerView.setVisibility(View.VISIBLE);
+            mBinding.ccPlayerView.setVisibility(View.GONE);
+            mBinding.exoPlayerView.setVisibility(View.GONE);
         } else if (ZAYApplication.getContext().getPlayerMode() == PlayerMode.MODE_EXO) {
             mZAYPlayer = new ZAYPlayerExoImpl.Builder(this)
                     .setSupportBackgroundAudio(false)
                     .setLifecycle(getLifecycle())
                     .build();
-            mZAYPlayer.bindPlayerView(mExoPlayerView);
-            mExoPlayerView.setVisibility(View.VISIBLE);
-            mCcPlayerView.setVisibility(View.GONE);
-            mBjyPlayerView.setVisibility(View.GONE);
+            mZAYPlayer.bindPlayerView(mBinding.exoPlayerView);
+            mBinding.exoPlayerView.setTimeFormatter(new DefaultTimeFormatter());// 自定义时间格式
+            mBinding.exoPlayerView.setVisibility(View.VISIBLE);
+            mBinding.ccPlayerView.setVisibility(View.GONE);
+            mBinding.bjyPlayerView.setVisibility(View.GONE);
         }
     }
 }

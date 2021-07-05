@@ -7,6 +7,9 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
+    buildFeatures {
+        viewBinding true
+    }
     defaultConfig {
         applicationId "com.zay.mediaplayer"
         minSdkVersion 21
@@ -53,6 +56,10 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    /*implementation 'com.github.xingchenhuanyu-zdw.ZAYPlayer:common:0.1.0'
+    implementation 'com.github.xingchenhuanyu-zdw.ZAYPlayer:player_cc:0.1.0'
+    implementation 'com.github.xingchenhuanyu-zdw.ZAYPlayer:player_bjy:0.1.0'
+    implementation 'com.github.xingchenhuanyu-zdw.ZAYPlayer:player_exo:0.1.0'*/
     implementation project(path: ':common')
     implementation project(path: ':player_cc')
     implementation project(path: ':player_bjy')

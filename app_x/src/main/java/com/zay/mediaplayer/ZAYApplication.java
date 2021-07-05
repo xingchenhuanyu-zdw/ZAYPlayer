@@ -51,6 +51,6 @@ public class ZAYApplication extends Application {
 
     @Constant.PlayerMode
     public int getPlayerMode() {
-        return PlayerMode.MODE_EXO;
+        return PlayerMode.MODE_CC;
     }
 }
