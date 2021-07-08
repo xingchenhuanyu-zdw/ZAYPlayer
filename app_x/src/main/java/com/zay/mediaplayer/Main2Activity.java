@@ -1,8 +1,13 @@
 package com.zay.mediaplayer;
 
+import android.content.res.Configuration;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.baijiayun.constant.VideoDefinition;
@@ -41,12 +46,39 @@ public class Main2Activity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        mZAYPlayer.enableAutoOrientation();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mZAYPlayer.disableAutoOrientation();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mZAYPlayer.removeAllOnPlayingTimeChangeListener();
         mZAYPlayer.removeAllOnBufferedUpdateListener();
         mZAYPlayer.removeAllOnBufferingListener();
         mZAYPlayer.removeAllOnPlayerStatusChangeListener();
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            mBinding.containerMedia.getLayoutParams().height = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+            mBinding.containerMedia.requestLayout();
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            mBinding.containerMedia.getLayoutParams().height = ViewGroup.LayoutParams.MATCH_PARENT;
+            mBinding.containerMedia.requestLayout();
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        }
     }
 
     private void initPlayerWrapper() {
@@ -60,6 +92,8 @@ public class Main2Activity extends AppCompatActivity {
                     .build();
             mZAYPlayer.bindPlayerView(mBinding.ccPlayerView);
             mBinding.ccPlayerView.setTimeFormatter(new DefaultTimeFormatter());// 自定义时间格式
+            mBinding.ccPlayerView.setUseController(true);
+            mBinding.ccPlayerView.setControlViewShowTime(3);
             mBinding.ccPlayerView.setVisibility(View.VISIBLE);
             mBinding.bjyPlayerView.setVisibility(View.GONE);
             mBinding.exoPlayerView.setVisibility(View.GONE);

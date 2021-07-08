@@ -74,20 +74,17 @@ public class ZAYCCPlayerView extends ZAYPlayerView implements TextureView.Surfac
         final double viewRatio = 1.0d * mViewWidth / mViewHeight;
         Log.i(TAG, "updateTextureViewSize===" + "viewWidth=" + mViewWidth + ", viewHeight=" + mViewHeight + ", viewRatio=" + viewRatio);
         //必须放在 post 里面执行
-        post(new Runnable() {
-            @Override
-            public void run() {
-                LayoutParams lp = (LayoutParams) mTextureView.getLayoutParams();
-                lp.gravity = Gravity.CENTER;
-                lp.width = mViewWidth;
-                lp.height = mViewHeight;
-                if (videoRatio > viewRatio) {
-                    lp.height = (int) (mViewWidth / videoRatio);
-                } else {
-                    lp.width = (int) (mViewHeight * videoRatio);
-                }
-                mTextureView.setLayoutParams(lp);
+        post(() -> {
+            LayoutParams lp = (LayoutParams) mTextureView.getLayoutParams();
+            lp.gravity = Gravity.CENTER;
+            lp.width = mViewWidth;
+            lp.height = mViewHeight;
+            if (videoRatio > viewRatio) {
+                lp.height = (int) (mViewWidth / videoRatio);
+            } else {
+                lp.width = (int) (mViewHeight * videoRatio);
             }
+            mTextureView.setLayoutParams(lp);
         });
     }
 

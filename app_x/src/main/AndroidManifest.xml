@@ -18,14 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning,UnusedAttribute">
-        <activity android:name=".Main2Activity">
+        <activity
+            android:name=".Main2Activity"
+            android:configChanges="keyboardHidden|orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
     </application>
 
 </manifest>

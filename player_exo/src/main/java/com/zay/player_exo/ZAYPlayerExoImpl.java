@@ -1,6 +1,8 @@
 package com.zay.player_exo;
 
+import android.app.Activity;
 import android.content.Context;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
@@ -23,6 +25,7 @@ import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
 import com.zay.common.listeners.ZAYOnBufferingListener;
 import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
 import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
+import com.zay.common.orientation.PlayerOrientationListener;
 import com.zay.common.widget.ZAYPlayerView;
 import com.zay.player_exo.widget.ZAYEXOPlayerView;
 
@@ -37,14 +40,16 @@ public class ZAYPlayerExoImpl implements ZAYPlayer, LifecycleObserver {
 
     private static final String TAG = ZAYPlayerExoImpl.class.getSimpleName();
     private boolean mSupportBackgroundAudio = true;
-    private Handler mHandler;
+    private final Handler mHandler;
+    private Activity mActivity;
     private boolean mIsPrepared = false;
     private boolean mIsAutoPaused = false;
     private SimpleExoPlayer mExoPlayer;
-    private Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
-    private Set<ZAYOnBufferedUpdateListener> mZAYOnBufferedUpdateListenerSet = new HashSet<>();
-    private Set<ZAYOnBufferingListener> mZAYOnBufferingListenerSet = new HashSet<>();
-    private Set<ZAYOnPlayerStatusChangeListener> mZAYOnPlayerStatusChangeListenerSet = new HashSet<>();
+    private final Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
+    private final Set<ZAYOnBufferedUpdateListener> mZAYOnBufferedUpdateListenerSet = new HashSet<>();
+    private final Set<ZAYOnBufferingListener> mZAYOnBufferingListenerSet = new HashSet<>();
+    private final Set<ZAYOnPlayerStatusChangeListener> mZAYOnPlayerStatusChangeListenerSet = new HashSet<>();
+    private PlayerOrientationListener mOrientationListener;
 
     @Override
     public void addOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
@@ -341,7 +346,7 @@ public class ZAYPlayerExoImpl implements ZAYPlayer, LifecycleObserver {
         }
     }
 
-    private Runnable mTimeInfoRunnable = new Runnable() {
+    private final Runnable mTimeInfoRunnable = new Runnable() {
         @Override
         public void run() {
             if (isPlaying()) {
@@ -356,7 +361,7 @@ public class ZAYPlayerExoImpl implements ZAYPlayer, LifecycleObserver {
     };
 
     private int mBufferedPercentage;
-    private Runnable mBufferedPercentageRunnable = new Runnable() {
+    private final Runnable mBufferedPercentageRunnable = new Runnable() {
         @Override
         public void run() {
             if (mExoPlayer != null) {
@@ -377,14 +382,43 @@ public class ZAYPlayerExoImpl implements ZAYPlayer, LifecycleObserver {
         }
     };
 
+    private void setActivity(@NonNull Activity activity) {
+        mActivity = activity;
+    }
+
+    private void initOrientationListener() {
+        if (mActivity != null) {
+            mOrientationListener = new PlayerOrientationListener(mActivity, SensorManager.SENSOR_DELAY_UI);
+            mOrientationListener.disable();
+        }
+    }
+
+    @Override
+    public void enableAutoOrientation() {
+        if (mOrientationListener != null && mOrientationListener.canDetectOrientation()) {
+            mOrientationListener.enable();
+        }
+    }
+
+    @Override
+    public void disableAutoOrientation() {
+        if (mOrientationListener != null) {
+            mOrientationListener.disable();
+        }
+    }
+
     public static class Builder {
 
         private boolean mSupportBackgroundAudio;
         private Lifecycle mLifecycle;
-        private Context mContext;
+        private final Context mContext;
+        private Activity mActivity;
 
         public Builder(@NonNull Context context) {
             this.mContext = context.getApplicationContext();
+            if (context instanceof Activity) {
+                mActivity = (Activity) context;
+            }
         }
 
         public Builder setSupportBackgroundAudio(boolean supportBackgroundAudio) {
@@ -407,6 +441,9 @@ public class ZAYPlayerExoImpl implements ZAYPlayer, LifecycleObserver {
             RenderersFactory renderersFactory = new DefaultRenderersFactory(mContext).setExtensionRendererMode(extensionRendererMode);
             SimpleExoPlayer exoPlayer = new SimpleExoPlayer.Builder(mContext, renderersFactory).build();
             playerFactory.setExoPlayer(exoPlayer);
+            if (mActivity != null)
+                playerFactory.setActivity(mActivity);
+            playerFactory.initOrientationListener();
             return playerFactory;
         }
     }

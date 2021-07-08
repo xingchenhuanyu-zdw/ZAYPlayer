@@ -1,7 +1,9 @@
 package com.zay.player_cc;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
+import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
@@ -22,6 +24,7 @@ import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
 import com.zay.common.listeners.ZAYOnBufferingListener;
 import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
 import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
+import com.zay.common.orientation.PlayerOrientationListener;
 import com.zay.common.widget.ZAYPlayerView;
 import com.zay.player_cc.widget.ZAYCCPlayerView;
 
@@ -38,6 +41,7 @@ public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureLis
     private static final String TAG = ZAYPlayerCCImpl.class.getSimpleName();
     private boolean mSupportBackgroundAudio = true;
     private Context mContext;
+    private Activity mActivity;
     private Handler mHandler;
     private String mUserId, mApiKey, mVerificationCode;
     private boolean mAutoPlay = false;
@@ -50,10 +54,11 @@ public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureLis
     private int mDrmServerPort;
     private int mCurrentPosition = -1;
     private int mPreferredDefinition = DWMediaPlayer.NORMAL_DEFINITION;
-    private Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
-    private Set<ZAYOnBufferedUpdateListener> mZAYOnBufferedUpdateListenerSet = new HashSet<>();
-    private Set<ZAYOnBufferingListener> mZAYOnBufferingListenerSet = new HashSet<>();
-    private Set<ZAYOnPlayerStatusChangeListener> mZAYOnPlayerStatusChangeListenerSet = new HashSet<>();
+    private final Set<ZAYOnPlayingTimeChangeListener> mZAYOnPlayingTimeChangeListenerSet = new HashSet<>();
+    private final Set<ZAYOnBufferedUpdateListener> mZAYOnBufferedUpdateListenerSet = new HashSet<>();
+    private final Set<ZAYOnBufferingListener> mZAYOnBufferingListenerSet = new HashSet<>();
+    private final Set<ZAYOnPlayerStatusChangeListener> mZAYOnPlayerStatusChangeListenerSet = new HashSet<>();
+    private PlayerOrientationListener mOrientationListener;
 
     @Override
     public void addOnPlayingTimeChangeListener(@NonNull ZAYOnPlayingTimeChangeListener listener) {
@@ -351,6 +356,10 @@ public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureLis
         mHandler = new Handler(Looper.getMainLooper());
     }
 
+    private void setActivity(@NonNull Activity activity) {
+        mActivity = activity;
+    }
+
     private void setUserId(@NonNull String userId) {
         mUserId = userId;
     }
@@ -368,69 +377,57 @@ public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureLis
         mMediaPlayer.setDRMServerPort(mDrmServerPort);
         mMediaPlayer.setScreenOnWhilePlaying(true);
         // 视频缓冲状态
-        mMediaPlayer.setOnInfoListener(new MediaPlayer.OnInfoListener() {
-            @Override
-            public boolean onInfo(MediaPlayer mp, int what, int extra) {
-                Log.i(TAG, "onInfo what: " + what);
-                if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
-                    for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
-                        if (listener != null) {
-                            listener.onBufferingStart();
-                        }
-                    }
-                } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
-                    for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
-                        if (listener != null) {
-                            listener.onBufferingEnd();
-                        }
+        mMediaPlayer.setOnInfoListener((mp, what, extra) -> {
+            Log.i(TAG, "onInfo what: " + what);
+            if (what == MediaPlayer.MEDIA_INFO_BUFFERING_START) {
+                for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
+                    if (listener != null) {
+                        listener.onBufferingStart();
                     }
                 }
-                return false;
+            } else if (what == MediaPlayer.MEDIA_INFO_BUFFERING_END) {
+                for (ZAYOnBufferingListener listener : mZAYOnBufferingListenerSet) {
+                    if (listener != null) {
+                        listener.onBufferingEnd();
+                    }
+                }
             }
+            return false;
         });
         // 视频缓冲进度
-        mMediaPlayer.setOnBufferingUpdateListener(new MediaPlayer.OnBufferingUpdateListener() {
-            @Override
-            public void onBufferingUpdate(MediaPlayer mp, int percent) {
-                for (ZAYOnBufferedUpdateListener listener : mZAYOnBufferedUpdateListenerSet) {
-                    if (listener != null) {
-                        listener.onBufferedPercentageChange(percent);
-                    }
+        mMediaPlayer.setOnBufferingUpdateListener((mp, percent) -> {
+            for (ZAYOnBufferedUpdateListener listener : mZAYOnBufferedUpdateListenerSet) {
+                if (listener != null) {
+                    listener.onBufferedPercentageChange(percent);
                 }
             }
         });
         // 可以开始播放
-        mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                Log.i(TAG, "setOnPreparedListener");
-                mIsPrepared = true;
-                if (mZAYCCPlayerView != null)
-                    mZAYCCPlayerView.onVideoSizeChanged(mp.getVideoWidth(), mp.getVideoHeight());
-                if (mAutoPlay) {
-                    start();
-                }
-                if (mCurrentPosition > 0) {// 切换清晰度时保持播放进度
-                    seekTo(mCurrentPosition);
-                    mCurrentPosition = -1;
-                }
-                for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
-                    if (listener != null) {
-                        listener.onPrepared();
-                    }
+        mMediaPlayer.setOnPreparedListener(mp -> {
+            Log.i(TAG, "setOnPreparedListener");
+            mIsPrepared = true;
+            if (mZAYCCPlayerView != null)
+                mZAYCCPlayerView.onVideoSizeChanged(mp.getVideoWidth(), mp.getVideoHeight());
+            if (mAutoPlay) {
+                start();
+            }
+            if (mCurrentPosition > 0) {// 切换清晰度时保持播放进度
+                seekTo(mCurrentPosition);
+                mCurrentPosition = -1;
+            }
+            for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
+                if (listener != null) {
+                    listener.onPrepared();
                 }
             }
         });
         // 视频播放完成
-        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                // 未设置视频资源时，点击 CCPlayerView 会触发，排除掉
-                if (mMediaPlayer.getPlayInfo() == null) return;
-                for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
-                    if (listener != null) {
-                        listener.onCompleted();
-                    }
+        mMediaPlayer.setOnCompletionListener(mp -> {
+            // 未设置视频资源时，点击 CCPlayerView 会触发，排除掉
+            if (mMediaPlayer.getPlayInfo() == null) return;
+            for (ZAYOnPlayerStatusChangeListener listener : mZAYOnPlayerStatusChangeListenerSet) {
+                if (listener != null) {
+                    listener.onCompleted();
                 }
             }
         });
@@ -451,7 +448,7 @@ public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureLis
         }
     }
 
-    private Runnable mTimeInfoRunnable = new Runnable() {
+    private final Runnable mTimeInfoRunnable = new Runnable() {
         @Override
         public void run() {
             if (isPlaying()) {
@@ -465,15 +462,40 @@ public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureLis
         }
     };
 
+    private void initOrientationListener() {
+        if (mActivity != null) {
+            mOrientationListener = new PlayerOrientationListener(mActivity, SensorManager.SENSOR_DELAY_UI);
+            mOrientationListener.disable();
+        }
+    }
+
+    @Override
+    public void enableAutoOrientation() {
+        if (mOrientationListener != null && mOrientationListener.canDetectOrientation()) {
+            mOrientationListener.enable();
+        }
+    }
+
+    @Override
+    public void disableAutoOrientation() {
+        if (mOrientationListener != null) {
+            mOrientationListener.disable();
+        }
+    }
+
     public static class Builder {
 
         private boolean mSupportBackgroundAudio;
         private Lifecycle mLifecycle;
-        private Context mContext;
+        private final Context mContext;
+        private Activity mActivity;
         private String mUserId, mApiKey, mVerificationCode;
 
         public Builder(@NonNull Context context) {
             this.mContext = context.getApplicationContext();
+            if (context instanceof Activity) {
+                mActivity = (Activity) context;
+            }
         }
 
         public Builder setSupportBackgroundAudio(boolean supportBackgroundAudio) {
@@ -507,11 +529,14 @@ public class ZAYPlayerCCImpl implements ZAYPlayer, TextureView.SurfaceTextureLis
             if (mLifecycle != null)
                 playerFactory.setLifecycle(mLifecycle);
             playerFactory.setContext(mContext);
+            if (mActivity != null)
+                playerFactory.setActivity(mActivity);
             playerFactory.setUserId(mUserId);
             playerFactory.setApiKey(mApiKey);
             playerFactory.setVerificationCode(mVerificationCode);
             playerFactory.startDRMServer();// 在setMediaPlayer之前调用
             playerFactory.setMediaPlayer(new DWMediaPlayer());
+            playerFactory.initOrientationListener();
             return playerFactory;
         }
     }

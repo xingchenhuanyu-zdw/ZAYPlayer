@@ -1,7 +1,6 @@
 package com.zay.common.widget;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,10 +18,8 @@ import com.zay.common.R;
 import com.zay.common.ZAYPlayer;
 import com.zay.common.formatter.DefaultTimeFormatter;
 import com.zay.common.formatter.ITimeFormatter;
-import com.zay.common.listeners.ZAYOnBufferedUpdateListener;
 import com.zay.common.listeners.ZAYOnBufferingListener;
 import com.zay.common.listeners.ZAYOnPlayerStatusChangeListener;
-import com.zay.common.listeners.ZAYOnPlayingTimeChangeListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,25 +102,17 @@ public class ZAYPlayerControlView extends FrameLayout implements View.OnClickLis
     }
 
     private void setListeners() {
-        mZAYPlayer.addOnPlayingTimeChangeListener(new ZAYOnPlayingTimeChangeListener() {
-            @Override
-            public void onPlayingTimeChange(int currentTime, int duration) {
-                if (mTimeFormatter == null)
-                    mTimeFormatter = new DefaultTimeFormatter();
-                mTvCurrentTime.setText(mTimeFormatter.getFormattedValue(currentTime * 1000L));
-                mTvDuration.setText(mTimeFormatter.getFormattedValue(duration * 1000L));
-                mSbProgress.setProgress(mSbProgress.getMax() * currentTime / duration);
-                if (mZAYPlayer.isPlaying()) {
-                    showPause();
-                }
+        mZAYPlayer.addOnPlayingTimeChangeListener((currentTime, duration) -> {
+            if (mTimeFormatter == null)
+                mTimeFormatter = new DefaultTimeFormatter();
+            mTvCurrentTime.setText(mTimeFormatter.getFormattedValue(currentTime * 1000L));
+            mTvDuration.setText(mTimeFormatter.getFormattedValue(duration * 1000L));
+            mSbProgress.setProgress(mSbProgress.getMax() * currentTime / duration);
+            if (mZAYPlayer.isPlaying()) {
+                showPause();
             }
         });
-        mZAYPlayer.addOnBufferedUpdateListener(new ZAYOnBufferedUpdateListener() {
-            @Override
-            public void onBufferedPercentageChange(int bufferedPercentage) {
-                mSbProgress.setSecondaryProgress(bufferedPercentage);
-            }
-        });
+        mZAYPlayer.addOnBufferedUpdateListener(bufferedPercentage -> mSbProgress.setSecondaryProgress(bufferedPercentage));
         mZAYPlayer.addOnBufferingListener(new ZAYOnBufferingListener() {
             @Override
             public void onBufferingStart() {
@@ -186,14 +175,11 @@ public class ZAYPlayerControlView extends FrameLayout implements View.OnClickLis
             if (supportedDefinitions == null || supportedDefinitions.size() <= 1) return;
             final List<String> definitionNames = new ArrayList<>(supportedDefinitions.keySet());
             new AlertDialog.Builder(getContext()).setTitle("清晰度")
-                    .setItems(definitionNames.toArray(new String[]{}), new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Integer definition = supportedDefinitions.get(definitionNames.get(which));
-                            if (definition != null) {
-                                boolean result = mZAYPlayer.changeDefinition(definition);
-                                Log.i(TAG, "changeDefinition: " + result);
-                            }
+                    .setItems(definitionNames.toArray(new String[]{}), (dialog, which) -> {
+                        Integer definition = supportedDefinitions.get(definitionNames.get(which));
+                        if (definition != null) {
+                            boolean result = mZAYPlayer.changeDefinition(definition);
+                            Log.i(TAG, "changeDefinition: " + result);
                         }
                     }).create().show();
         }

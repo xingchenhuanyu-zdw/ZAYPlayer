@@ -77,4 +77,8 @@ public interface ZAYPlayer {
     boolean changeDefinition(int definition);
 
     void setPreferredDefinition(int definition);
+
+    void enableAutoOrientation();
+
+    void disableAutoOrientation();
 }
