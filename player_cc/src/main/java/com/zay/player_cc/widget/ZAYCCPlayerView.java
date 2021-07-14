@@ -20,7 +20,7 @@ import com.zay.common.widget.ZAYPlayerView;
  */
 public class ZAYCCPlayerView extends ZAYPlayerView implements TextureView.SurfaceTextureListener {
 
-    private static final String TAG = ZAYPlayerView.class.getSimpleName();
+    private static final String TAG = ZAYCCPlayerView.class.getSimpleName();
     private TextureView mTextureView;
     private TextureView.SurfaceTextureListener mSurfaceTextureListener;
     private int mVideoWidth;
@@ -47,7 +47,6 @@ public class ZAYCCPlayerView extends ZAYPlayerView implements TextureView.Surfac
 
     public ZAYCCPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
-        init();
     }
 
     public void setSurfaceTextureListener(TextureView.SurfaceTextureListener surfaceTextureListener) {

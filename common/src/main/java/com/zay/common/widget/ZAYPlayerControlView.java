@@ -51,6 +51,10 @@ public class ZAYPlayerControlView extends FrameLayout implements View.OnClickLis
         mTimeFormatter = timeFormatter;
     }
 
+    public ITimeFormatter getTimeFormatter() {
+        return mTimeFormatter;
+    }
+
     public ZAYPlayerControlView(@NonNull Context context) {
         this(context, null);
     }
