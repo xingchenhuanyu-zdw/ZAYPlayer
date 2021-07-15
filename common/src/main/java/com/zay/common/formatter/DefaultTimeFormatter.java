@@ -9,15 +9,9 @@ public class DefaultTimeFormatter implements ITimeFormatter {
     public String getFormattedValue(long millSeconds) {
         long seconds = millSeconds / 1000;
         String result = "";
-        long hour, min, second;
-        hour = seconds / 3600;
-        min = (seconds - hour * 3600) / 60;
-        second = seconds - hour * 3600 - min * 60;
-        if (hour < 10) {
-            result += "0" + hour + ":";
-        } else {
-            result += hour + ":";
-        }
+        long min, second;
+        min = seconds / 60;
+        second = seconds - min * 60;
         if (min < 10) {
             result += "0" + min + ":";
         } else {

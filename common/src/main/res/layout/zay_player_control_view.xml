@@ -4,8 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="45dp"
     android:layout_gravity="bottom"
-    android:background="#9999"
-    android:orientation="horizontal">
+    android:background="#9999">
 
     <ImageView
         android:id="@+id/zay_iv_pause"
@@ -69,4 +68,14 @@
         android:visibility="visible"
         tools:text="HD"
         tools:visibility="visible" />
+
+    <ImageView
+        android:id="@+id/zay_iv_fullscreen"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center_vertical"
+        android:padding="3dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/zay_fullscreen_close"
+        tools:ignore="ContentDescription" />
 </LinearLayout>

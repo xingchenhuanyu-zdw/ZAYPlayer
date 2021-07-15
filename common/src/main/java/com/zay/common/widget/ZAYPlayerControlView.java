@@ -1,6 +1,10 @@
 package com.zay.common.widget;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -39,6 +43,7 @@ public class ZAYPlayerControlView extends FrameLayout implements View.OnClickLis
     private TextView mTvCurrentTime;
     private TextView mTvDuration;
     private SeekBar mSbProgress;
+    private ImageView mIvFullscreen;
 
     private ITimeFormatter mTimeFormatter = new DefaultTimeFormatter();
 
@@ -102,7 +107,26 @@ public class ZAYPlayerControlView extends FrameLayout implements View.OnClickLis
                 }
             }
         });
+        mIvFullscreen = findViewById(R.id.zay_iv_fullscreen);
+        mIvFullscreen.setOnClickListener(this);
+        updateIvFullscreenIcon();
         showStart();
+    }
+
+    private void updateIvFullscreenIcon() {
+        if (mIvFullscreen != null) {
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                mIvFullscreen.setImageResource(R.drawable.zay_fullscreen_open);
+            } else {
+                mIvFullscreen.setImageResource(R.drawable.zay_fullscreen_close);
+            }
+        }
+    }
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldW, int oldH) {
+        super.onSizeChanged(w, h, oldW, oldH);
+        updateIvFullscreenIcon();
     }
 
     private void setListeners() {
@@ -164,6 +188,7 @@ public class ZAYPlayerControlView extends FrameLayout implements View.OnClickLis
         mIvStart.setVisibility(GONE);
     }
 
+    @SuppressLint("SourceLockedOrientationActivity")
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.zay_iv_pause) {
@@ -186,6 +211,14 @@ public class ZAYPlayerControlView extends FrameLayout implements View.OnClickLis
                             Log.i(TAG, "changeDefinition: " + result);
                         }
                     }).create().show();
+        } else if (v.getId() == R.id.zay_iv_fullscreen) {
+            if (!(getContext() instanceof Activity)) return;
+            Activity activity = (Activity) getContext();
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            } else {
+                activity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            }
         }
     }
 }
